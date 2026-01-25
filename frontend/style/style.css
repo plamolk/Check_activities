@@ -1,6 +1,27 @@
-  .body-login {
-    background-image: url("../image/icon/bg.jpg");
-    background-size: cover;      
-    background-repeat: no-repeat; 
-    background-position: center;
+body {
+  height: 100vh;
+  margin: 0;
+
+  background: linear-gradient(
+    135deg,
+    #eaf3ff,  /* ขาวอมฟ้า (จากภาพ) */
+    #cfe4ff,  /* ฟ้าอ่อน */
+    #9ec5f8,  /* ฟ้าชัดขึ้น */
+    #bfe7ef   /* ฟ้าอมเขียว */
+  );
+
+  background-size: 300% 300%;
+  animation: bgFlow 45s ease-in-out infinite;
+}
+
+@keyframes bgFlow {
+  0% {
+    background-position: 0% 0%;
   }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
