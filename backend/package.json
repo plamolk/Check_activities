@@ -21,6 +21,7 @@
   "homepage": "https://github.com/plamolk/Check_activities#readme",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.18",
+    "axios": "^1.13.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
