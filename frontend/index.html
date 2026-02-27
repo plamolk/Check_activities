@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
@@ -8,37 +8,259 @@
     <link rel="stylesheet" href="./style/style.css">
     <link rel="stylesheet" href="./style/font.css">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <title>หน้าหลัก</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- AOS Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <title>เข้าสู่ระบบ</title>
 </head>
 
-<body class="body-login overflow-hidden">
-    <div class="mx-auto max-w-lg mt-35">
-        <div class="bg-white rounded-xl px-8 py-15">
-        <div class="justify-center flex items-center">
-            <img src="./image/icon/logo.png" class="w-45 h-38 " alt="">
+<body class="min-h-screen flex items-center justify-center p-4 overflow-hidden">
+
+    <!-- Decorative Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/30 rounded-full blur-3xl animate-pulse"></div>
+        <div
+            class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]">
         </div>
-        <div class="mt-3">
-            <h1 class="text-center tasa-explorer text-6xl">Login</h1>
-            <h1 class="text-center text-xl opacity-60 anuphan-login mt-2">ยินดีต้อนรับสู่ ระบบเช็คชื่อกิจกรรม</h1>
-        </div>
-        <div class="mt-5">
-            <div class="">
-                <h1 class="opacity-60 anuphan-login">รหัสประจำตัวนักเรียน</h1>
-                <input type="text" class="shadow-lg w-full mt-1 rounded-xl p-1 border border-gray-200 bg-white ps-3" required placeholder="รหัสประจำตัวนักเรียน">
-            </div>
-            <div class="mt-6">
-                <h1 class="opacity-60 anuphan-login">รหัสผ่าน</h1>
-                <input type="text" class="shadow-lg w-full mt-1 rounded-xl p-1 border border-gray-200 bg-white ps-3" required placeholder="รหัสผ่าน">
-            </div>
-            <div class="mt-6">
-                <button class="text-center bg-blue-400 p-2 rounded-xl text-white w-full shadow-lg hover:bg-blue-500 hover:translate-x-2 hover:-translate-y-2 transition duration-600" style="font-weight: 600;">Login</button>
-            </div>
-        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]">
         </div>
     </div>
+
+    <!-- Login Card -->
+    <div class="relative z-10 w-full max-w-4xl bg-white/70 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+        data-aos="fade-up" data-aos-duration="800">
+
+        <!-- ===== Left Panel (Decorative + Logo) ===== -->
+        <div
+            class="relative flex-shrink-0 md:flex-1 bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-500 flex flex-col items-center justify-center py-10 px-6 md:py-16 md:px-10 overflow-hidden">
+
+            <!-- Decorative Circles -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 border border-white/10 rounded-full"></div>
+            <div class="absolute -bottom-8 -left-8 w-32 h-32 border border-white/10 rounded-full"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-white/5 rounded-full">
+            </div>
+
+            <!-- Logo -->
+            <div class="relative flex items-center justify-center w-28 h-28 md:w-40 md:h-40" data-aos="zoom-in"
+                data-aos-delay="300">
+                <!-- Pulsing Ring -->
+                <div
+                    class="absolute inset-0 border-2 border-white/20 rounded-full animate-ping [animation-duration:3s]">
+                </div>
+                <div
+                    class="absolute -inset-3 border border-white/10 rounded-full animate-pulse [animation-duration:4s]">
+                </div>
+                <img src="./image/icon/logo.png"
+                    class="w-24 h-20 md:w-36 md:h-30 object-contain brightness-0 invert opacity-95" alt="logo">
+            </div>
+
+            <!-- Text -->
+            <h2 class="text-white text-lg md:text-2xl font-semibold mt-5 text-center anuphan-login" data-aos="fade-up"
+                data-aos-delay="400">
+                ระบบเช็คชื่อกิจกรรม
+            </h2>
+            <p class="hidden md:block text-white/70 text-sm text-center mt-2 max-w-[260px] anuphan-login"
+                data-aos="fade-up" data-aos-delay="500">
+                เข้าสู่ระบบเพื่อบันทึกและตรวจสอบ การเข้าร่วมกิจกรรมของนักเรียน
+            </p>
+        </div>
+
+        <!-- ===== Right Panel (Form) ===== -->
+        <div class="flex-1 p-8 md:p-12 flex flex-col justify-center">
+
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 anuphan-login" data-aos="fade-left"
+                data-aos-delay="300">
+                เข้าสู่ระบบ
+            </h1>
+            <p class="text-gray-400 text-sm mt-1 mb-6 anuphan-login" data-aos="fade-left" data-aos-delay="400">
+                กรุณากรอกข้อมูลเพื่อเข้าใช้งาน
+            </p>
+
+            <!-- Alert -->
+            <div id="alert-box" class="hidden mb-4" data-aos="fade-down">
+                <div id="alert-content" class="rounded-xl px-4 py-3 text-sm anuphan-login text-center"></div>
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" onsubmit="return false;">
+                <!-- Username -->
+                <div class="mb-5" data-aos="fade-left" data-aos-delay="500">
+                    <label for="username"
+                        class="block text-gray-500 text-sm font-medium mb-1.5 anuphan-login">รหัสประจำตัวนักเรียน</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                        </span>
+                        <input id="username" type="text"
+                            class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 text-sm anuphan-login outline-none transition-all duration-300 focus:border-sky-400 focus:ring-2 focus:ring-sky-200 focus:bg-white"
+                            required placeholder="กรอกรหัสประจำตัว" autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-7" data-aos="fade-left" data-aos-delay="600">
+                    <label for="password"
+                        class="block text-gray-500 text-sm font-medium mb-1.5 anuphan-login">รหัสผ่าน</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </span>
+                        <input id="password" type="password"
+                            class="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 text-sm anuphan-login outline-none transition-all duration-300 focus:border-sky-400 focus:ring-2 focus:ring-sky-200 focus:bg-white"
+                            required placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+                        <!-- Toggle Password -->
+                        <button type="button" id="toggle-password"
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-sky-500 transition-colors duration-300 cursor-pointer"
+                            title="แสดง/ซ่อนรหัสผ่าน">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.98 8.223A10.477 10.477 0 001.934 12c1.292 4.338 5.31 7.5 10.066 7.5.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div data-aos="fade-up" data-aos-delay="700">
+                    <button id="login-btn" type="submit"
+                        class="w-full py-3 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 cursor-pointer anuphan-login text-base">
+                        เข้าสู่ระบบ
+                    </button>
+                </div>
+            </form>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 my-6" data-aos="fade-up" data-aos-delay="800">
+                <div class="flex-1 h-px bg-gray-200"></div>
+                <span class="text-gray-400 text-xs anuphan-login">Check Activities System</span>
+                <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+
+            <p class="text-center text-gray-400 text-xs anuphan-login" data-aos="fade-up" data-aos-delay="900">
+                หากมีปัญหาในการเข้าสู่ระบบ กรุณาติดต่อผู้ดูแลระบบ
+            </p>
+        </div>
+    </div>
+
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+        // ===== Toggle Password =====
+        const toggleBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+        const eyeSlashIcon = document.getElementById('eye-slash-icon');
+
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.classList.toggle('hidden', isPassword);
+            eyeSlashIcon.classList.toggle('hidden', !isPassword);
+        });
+
+        // ===== Alert Helper =====
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('alert-box');
+            const alertContent = document.getElementById('alert-content');
+            alertBox.classList.remove('hidden');
+
+            if (type === 'error') {
+                alertContent.className = 'rounded-xl px-4 py-3 text-sm anuphan-login text-center bg-red-50 text-red-500 border border-red-200';
+            } else {
+                alertContent.className = 'rounded-xl px-4 py-3 text-sm anuphan-login text-center bg-sky-50 text-sky-600 border border-sky-200';
+            }
+            alertContent.textContent = message;
+            setTimeout(() => { alertBox.classList.add('hidden'); }, 5000);
+        }
+
+        // ===== Login Submit =====
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                showAlert('กรุณากรอกรหัสประจำตัวนักเรียนและรหัสผ่าน');
+                return;
+            }
+
+            // Disable + loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 inline-block mr-2 -mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                กำลังเข้าสู่ระบบ...
+            `;
+            loginBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    showAlert('เข้าสู่ระบบสำเร็จ! กำลังเปลี่ยนหน้า...', 'success');
+
+                    try {
+                        const payload = JSON.parse(atob(data.token.split('.')[1]));
+                        setTimeout(() => {
+                            window.location.href = payload.role === 'admin'
+                                ? '/admin/index.html'
+                                : '/student/index.html';
+                        }, 1000);
+                    } catch {
+                        setTimeout(() => { window.location.href = '/student/index.html'; }, 1000);
+                    }
+                } else {
+                    showAlert(data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+                }
+            } catch (err) {
+                showAlert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'เข้าสู่ระบบ';
+                loginBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        });
+    </script>
 </body>
 
 </html>
