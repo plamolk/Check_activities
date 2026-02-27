@@ -1,6 +1,7 @@
 // src/middlewares/auth.middleware.js
 const jwt = require("jsonwebtoken");
 
+
 function authMiddleware(req, res, next) {
   // 1) ดึง token จาก header
   const authHeader = req.headers.authorization;
@@ -30,4 +31,4 @@ function authMiddleware(req, res, next) {
   }
 }
 
-module.exports = authMiddleware;3
+module.exports = authMiddleware;

@@ -1,48 +1,86 @@
+// src/controllers/auth.controller.js
+const db = require('../config/db');
+const jwt = require('jsonwebtoken');
+const { rmsLogin } = require('../services/rms.services');
 
-const jwt = require("jsonwebtoken");
-const { rmsLogin } = require("../services/rms.services");
-
-async function login(req, res) {
-  // 1) รับข้อมูลจากคนที่พยายาม login
-  const { username, password } = req.body;
-
-  // กันกรณีไม่ส่งข้อมูลมา
-  if (!username || !password) {
-    return res.status(400).json({ message: "Missing username or password" });
-  }
-
+exports.login = async (req, res) => {
   try {
-    // 2) เอาข้อมูลไปถาม RMS
-    const rmsResponse = await rmsLogin(username, password);
+    const { username, password } = req.body;
 
-    // 3) เช็คว่า RMS อนุญาตไหม
-    console.log("RMS RESPONSE:", rmsResponse);
+    // 1️⃣ เรียก RMS
+
+    const rmsResponse = await rmsLogin(username, password);
     if (!rmsResponse.result || rmsResponse.result.length === 0) {
-      return res.status(401).json({ message: "Login failed" });
+      return res.status(401).json({ message: 'Login failed' });
     }
 
-    // 4) ดึงข้อมูล user คนแรก
     const user = rmsResponse.result[0];
 
-    // 5) สร้างบัตรผ่าน (JWT)
-    const token = jwt.sign(
-      {
-        user_id: user.user_id || user.id,
-        role: user.role || "student"
-      },
-      process.env.JWT_SECRET || "dev_secret",
-      { expiresIn: "1d" }
+    let user_id;
+    let role;
+    let prefix;
+    let first_name;
+    let last_name;
+    let department = null;
+    let group_code = null;
+    let group_name = null;
+    let rfid = null;
+
+    // 2️⃣ แยก student / teacher
+    if (user.std_code) {
+      user_id = user.std_code;
+      role = 1;
+      prefix = user.std_prefix;
+      first_name = user.std_firstname;
+      last_name = user.std_lastname;
+      department = user.std_major;
+      group_code = user.std_group_code;
+      group_name = user.std_group_name;
+      rfid = user.std_rfid;
+    }
+
+    if (user.thaiid) {
+      user_id = user.thaiid;
+      role = 2;
+      prefix = null;
+      first_name = user.first_name;
+      last_name = user.last_name;
+      department = user.department;
+    }
+
+    // 3️⃣ Insert หรือ Update
+    await db.query(
+      `
+      INSERT INTO user
+      (user_id, role_id, user_prefix, first_name, last_name, user_rfid, user_group_code, user_group_name, user_department)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        role_id = VALUES(role),
+        user_prefix = VALUES(prefix),
+        first_name = VALUES(first_name),
+        last_name = VALUES(last_name),
+        user_rfid = VALUES(rfid),
+        group_code = VALUES(group_code),
+        group_name = VALUES(group_name),
+        user_department = VALUES(department)
+      `,
+      [user_id, role, prefix, first_name, last_name, rfid, group_code, group_name, department]
     );
 
-    // 6) ส่ง token กลับไป
-    res.json({
-      message: "Login success",
+    // 4️⃣ สร้าง JWT
+    const token = jwt.sign(
+      { user_id, role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    return res.json({
+      message: 'Login success',
       token
     });
 
-  } catch (err) {
-    res.status(500).json({ message: "RMS error" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
   }
-}
-
-module.exports = { login };
+};
