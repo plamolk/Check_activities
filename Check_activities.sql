@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Feb 28, 2026 at 06:38 AM
--- Server version: 9.6.0
+-- Generation Time: Feb 28, 2026 at 07:35 AM
+-- Server version: 9.5.0
 -- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -59,8 +59,15 @@ CREATE TABLE `user` (
   `role_id` int NOT NULL,
   `admin_user` varchar(255) DEFAULT NULL,
   `admin_password` varchar(255) DEFAULT NULL,
-  `admin_is` tinyint(1) NOT NULL DEFAULT '1'
+  `admin_super` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `user_department`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
+('1119902443378', NULL, NULL, 'นายวีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 'เทคโนโลยีสารสนเทศ ', 2, NULL, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -77,6 +84,7 @@ ALTER TABLE `role`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `admin_user` (`admin_user`),
   ADD KEY `role_id` (`role_id`);
 
 --
