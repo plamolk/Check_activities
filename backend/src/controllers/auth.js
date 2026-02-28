@@ -2,6 +2,7 @@
 const db = require('../config/db');
 const jwt = require('jsonwebtoken');
 const { rmsLogin } = require('../services/rms.services');
+const { splitPrefix } = require('../utils/prefix');
 
 exports.login = async (req, res) => {
   try {
