@@ -10,6 +10,10 @@ exports.login = async (req, res) => {
     // 1️⃣ เรียก RMS
 
     const rmsResponse = await rmsLogin(username, password);
+
+    console.log("===== RMS RAW RESPONSE =====");
+    console.log(JSON.stringify(rmsResponse, null, 2));
+    console.log("============================");
     if (!rmsResponse.result || rmsResponse.result.length === 0) {
       return res.status(401).json({ message: 'Login failed' });
     }
@@ -47,6 +51,7 @@ exports.login = async (req, res) => {
       last_name = user.last_name;
       department = user.department;
     }
+    console.log(user_id, role, prefix, first_name, last_name, rfid, group_code, group_name, department);
 
     // 3️⃣ Insert หรือ Update
     await db.query(
@@ -55,14 +60,14 @@ exports.login = async (req, res) => {
       (user_id, role_id, user_prefix, first_name, last_name, user_rfid, user_group_code, user_group_name, user_department)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
-        role_id = VALUES(role),
-        user_prefix = VALUES(prefix),
+        role_id = VALUES(role_id),
+        user_prefix = VALUES(user_prefix),
         first_name = VALUES(first_name),
         last_name = VALUES(last_name),
-        user_rfid = VALUES(rfid),
-        group_code = VALUES(group_code),
-        group_name = VALUES(group_name),
-        user_department = VALUES(department)
+        user_rfid = VALUES(user_rfid),
+        user_group_code = VALUES(user_group_code),
+        user_group_name = VALUES(user_group_name),
+        user_department = VALUES(user_department)
       `,
       [user_id, role, prefix, first_name, last_name, rfid, group_code, group_name, department]
     );

@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 
 
-function authMiddleware(req, res, next) {
+ exports.verifyToken = (req, res, next) => {
   // 1) ดึง token จาก header
   const authHeader = req.headers.authorization;
 
@@ -30,5 +30,3 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ message: "Invalid token" });
   }
 }
-
-module.exports = authMiddleware;
