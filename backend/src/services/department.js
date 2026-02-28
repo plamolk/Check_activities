@@ -1,7 +1,9 @@
 const db = require('../config/db');
 
-exports.findOrCreateDepartment = async (name) => {
-  const trimmed = name.trim();
+exports.findOrCreateDepartment = async (departmentName) => {
+  if (!departmentName) return null;
+
+  const trimmed = departmentName.trim();
 
   const [rows] = await db.query(
     'SELECT department_id FROM department WHERE department_name = ?',

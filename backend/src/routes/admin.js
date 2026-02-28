@@ -5,18 +5,9 @@ const { verifyToken } = require('../middlewares/auth');
 const { requireSuperAdmin } = require('../middlewares/role');
 const { createAdmin, getAdmins } = require('../controllers/admin');
 
-router.post(
-  '/create',
-  verifyToken,
-  requireSuperAdmin,
-  createAdmin
-);
 
-router.get(
-  '/list',
-  verifyToken,
-  requireSuperAdmin,
-  getAdmins
-);
+router.post('/create', verifyToken, requireSuperAdmin, createAdmin);
+
+router.get('/list', verifyToken, requireSuperAdmin, getAdmins);
 
 module.exports = router;

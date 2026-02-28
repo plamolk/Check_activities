@@ -12,7 +12,7 @@ exports.createAdmin = async (req, res) => {
       `
       INSERT INTO user
       (user_id, role_id, admin_user, admin_password, first_name, last_name, admin_super)
-      VALUES (?, '3', ?, ?, ?, ?, '0')
+      VALUES (?, 3, ?, ?, ?, ?, 0)
       `,
       [
         `admin_${Date.now()}`,
@@ -26,14 +26,13 @@ exports.createAdmin = async (req, res) => {
     return res.json({ message: 'Admin created successfully' });
 
   } catch (error) {
-    console.error(error);
+    console.error("CREATE ADMIN ERROR:", error);
     return res.status(500).json({ message: 'Error creating admin' });
   }
 };
-
 exports.getAdmins = async (req, res) => {
   const [rows] = await db.query(
-    'SELECT user_id, admin_user, first_name, last_name, admin_super FROM user WHERE role_id = 3'
+    'SELECT user_id, admin_user, first_name, last_name, admin_is FROM user WHERE role_id = 3'
   );
 
   res.json(rows);

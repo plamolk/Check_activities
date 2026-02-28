@@ -239,16 +239,13 @@
                     localStorage.setItem('token', data.token);
                     showAlert('เข้าสู่ระบบสำเร็จ! กำลังเปลี่ยนหน้า...', 'success');
 
-                    try {
-                        const payload = JSON.parse(atob(data.token.split('.')[1]));
-                        setTimeout(() => {
-                            window.location.href = payload.role === 'admin'
-                                ? '/admin/index.html'
-                                : '/student/index.html';
+                    const payload = JSON.parse(atob(data.token.split('.')[1]));
+                    setTimeout(() => {
+                        if (payload.role_id === 3) window.location.replace('/admin/index.html');
+                        else if (payload.role_id === 2) window.location.replace('/teacher/index.html');
+                        else window.location.replace('/student/index.html');
                         }, 1000);
-                    } catch {
-                        setTimeout(() => { window.location.href = '/student/index.html'; }, 1000);
-                    }
+                   
                 } else {
                     showAlert(data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
                 }
