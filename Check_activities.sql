@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Feb 28, 2026 at 07:35 AM
--- Server version: 9.5.0
+-- Generation Time: Feb 28, 2026 at 11:32 AM
+-- Server version: 9.6.0
 -- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,6 +20,17 @@ SET time_zone = "+00:00";
 --
 -- Database: `Check_activities`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `department`
+--
+
+CREATE TABLE `department` (
+  `department_id` int NOT NULL,
+  `department_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -55,7 +66,7 @@ CREATE TABLE `user` (
   `last_name` varchar(255) NOT NULL,
   `user_group_code` varchar(255) DEFAULT NULL,
   `user_group_name` varchar(255) DEFAULT NULL,
-  `user_department` varchar(255) NOT NULL,
+  `department_id` int NOT NULL,
   `role_id` int NOT NULL,
   `admin_user` varchar(255) DEFAULT NULL,
   `admin_password` varchar(255) DEFAULT NULL,
@@ -63,15 +74,15 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`user_id`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `user_department`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
-('1119902443378', NULL, NULL, 'นายวีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 'เทคโนโลยีสารสนเทศ ', 2, NULL, NULL, 0);
-
---
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `department`
+--
+ALTER TABLE `department`
+  ADD PRIMARY KEY (`department_id`),
+  ADD UNIQUE KEY `department_name` (`department_name`);
 
 --
 -- Indexes for table `role`
@@ -90,6 +101,12 @@ ALTER TABLE `user`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `department`
+--
+ALTER TABLE `department`
+  MODIFY `department_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `role`
