@@ -14,8 +14,7 @@ exports.createAdmin = async (req, res) => {
       (user_id, role_id, admin_user, admin_password, first_name, last_name, admin_super)
       VALUES (?, 3, ?, ?, ?, ?, 0)
       `,
-      [
-        `admin_${Date.now()}`,
+      [,
         username,
         hashedPassword,
         first_name,

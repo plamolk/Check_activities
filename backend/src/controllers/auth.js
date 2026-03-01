@@ -10,9 +10,9 @@ exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // ====================================================
-    // 1️⃣ เช็ค Admin ก่อน (ไม่ผ่าน RMS)
-    // ====================================================
+    // ===========================
+    // 1️⃣ เช็ค Admin ก่อน
+    // ===========================
     const [adminRows] = await db.query(
       'SELECT * FROM user WHERE admin_user = ? AND role_id = 3',
       [username]
@@ -43,66 +43,86 @@ exports.login = async (req, res) => {
       });
     }
 
-    // ====================================================
-    // 2️⃣ ถ้าไม่ใช่ admin → เรียก RMS
-    // ====================================================
+    // ===========================
+    // 2️⃣ RMS Login
+    // ===========================
     const rmsResponse = await rmsLogin(username, password);
 
     if (!rmsResponse.result || rmsResponse.result.length === 0) {
       return res.status(401).json({ message: 'Login failed' });
     }
 
-    const user = rmsResponse.result[0];
+    const rmsUser = rmsResponse.result[0];
 
-    // ====================================================
-    // 3️⃣ Map role จาก types
-    // ====================================================
+    // ===========================
+    // 3️⃣ Map role
+    // ===========================
     let role_id;
-
-    if (user.types === 'S') role_id = 1;      // student
-    else if (user.types === 'T') role_id = 2; // teacher
+    if (rmsUser.types === 'S') role_id = 1;
+    else if (rmsUser.types === 'T') role_id = 2;
     else return res.status(400).json({ message: 'Unknown user type' });
 
-    const user_id = user.username;
+    const user_code = rmsUser.username;
 
-    // ====================================================
+    // ===========================
     // 4️⃣ แยก prefix
-    // ====================================================
-    const nameData = splitPrefix(user.first_name);
-
+    // ===========================
+    const nameData = splitPrefix(rmsUser.first_name);
     const prefix = nameData.prefix;
     const first_name = nameData.first_name;
-    const last_name = user.last_name;
+    const last_name = rmsUser.last_name;
 
-    // ====================================================
-    // 5️⃣ Normalize Department
-    // ====================================================
-    const department_id = await findOrCreateDepartment(user.department);
+    // ===========================
+    // 5️⃣ Department
+    // ===========================
+    const department_id = await findOrCreateDepartment(rmsUser.department);
 
-    // ====================================================
-    // 6️⃣ Insert / Update User
-    // ====================================================
-    await db.query(
-      `
-      INSERT INTO user
-      (user_id, role_id, user_prefix, first_name, last_name, department_id)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        role_id = VALUES(role_id),
-        user_prefix = VALUES(user_prefix),
-        first_name = VALUES(first_name),
-        last_name = VALUES(last_name),
-        department_id = VALUES(department_id)
-      `,
-      [user_id, role_id, prefix, first_name, last_name, department_id]
+    // ===========================
+    // 6️⃣ หา user จาก user_code ก่อน
+    // ===========================
+    const [existingUser] = await db.query(
+      'SELECT user_id FROM user WHERE user_code = ?',
+      [user_code]
     );
 
-    // ====================================================
-    // 7️⃣ สร้าง JWT
-    // ====================================================
+    let user_id;
+
+    if (existingUser.length === 0) {
+      // insert ใหม่
+      const [result] = await db.query(
+        `
+        INSERT INTO user
+        (user_code, role_id, user_prefix, first_name, last_name, department_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        [user_code, role_id, prefix, first_name, last_name, department_id]
+      );
+
+      user_id = result.insertId;
+    } else {
+      user_id = existingUser[0].user_id;
+
+      // update ข้อมูล
+      await db.query(
+        `
+        UPDATE user
+        SET role_id = ?,
+            user_prefix = ?,
+            first_name = ?,
+            last_name = ?,
+            department_id = ?
+        WHERE user_id = ?
+        `,
+        [role_id, prefix, first_name, last_name, department_id, user_id]
+      );
+    }
+
+    // ===========================
+    // 7️⃣ JWT
+    // ===========================
     const token = jwt.sign(
       {
-        user_id,
+        user_id,     // internal id
         role_id,
         admin_super: 0
       },

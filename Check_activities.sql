@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Feb 28, 2026 at 04:55 PM
+-- Generation Time: Mar 01, 2026 at 10:57 AM
 -- Server version: 9.5.0
 -- PHP Version: 8.3.26
 
@@ -20,6 +20,23 @@ SET time_zone = "+00:00";
 --
 -- Database: `Check_activities`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `activity`
+--
+
+CREATE TABLE `activity` (
+  `activity_id` int NOT NULL,
+  `activity_name` varchar(255) NOT NULL,
+  `activity_detail` text,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `status` enum('open','closed','finished','cancelled') DEFAULT 'closed',
+  `created_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -67,9 +84,10 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 --
 
 CREATE TABLE `user` (
-  `user_id` varchar(20) NOT NULL,
+  `user_id` int NOT NULL,
+  `user_code` varchar(20) DEFAULT NULL,
   `user_rfid` varchar(255) DEFAULT NULL,
-  `user_prefix` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `user_prefix` varchar(20) DEFAULT NULL,
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `user_group_code` varchar(255) DEFAULT NULL,
@@ -85,18 +103,20 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `department_id`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
-('67219010001', NULL, 'นาย', 'วชิรวิทย์', 'หอมคำ', NULL, NULL, 1, 1, NULL, NULL, 0),
-('67219010002', NULL, 'นาย', 'ทินกฤต', 'บุษบงก์', NULL, NULL, 1, 1, NULL, NULL, 0),
-('67219010010', NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
-('67219010013', NULL, 'นาย', 'พงศ์วรา', 'ยะมา', NULL, NULL, 1, 1, NULL, NULL, 0),
-('67219100013', NULL, 'นางสาว', 'นรมน', 'บุญสมเชื้อ', NULL, NULL, 2, 1, NULL, NULL, 0),
-('admin_1772292038699', NULL, NULL, 'pla', 'molk', NULL, NULL, NULL, 3, 'ยอด', '$2b$10$t3B/V7W0JQYs64kxGyNtLuHi0PmyXaLX5KBV.20QVRkWeH9YHYewO', 0),
-('super_admin', NULL, NULL, 'veerakit', 'Sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$xRecSsOCe3fFMxbj11KzDu1JhnxEvuqN7HW9bPFcQ15PniiRmPXAi', 1);
+INSERT INTO `user` (`user_id`, `user_code`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `department_id`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
+(2, '67219010010', NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
+(3, NULL, NULL, NULL, 'veerakit', 'sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$ngahi2mfGjdCk/0Z8xHBPOmDE0D0jrV5KMoYIGHCurT92GN2sa6Mi', 0);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `activity`
+--
+ALTER TABLE `activity`
+  ADD PRIMARY KEY (`activity_id`),
+  ADD KEY `created_by` (`created_by`);
 
 --
 -- Indexes for table `department`
@@ -116,12 +136,20 @@ ALTER TABLE `role`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `user_code` (`user_code`),
   ADD UNIQUE KEY `admin_user` (`admin_user`),
+  ADD KEY `department_id` (`department_id`),
   ADD KEY `role_id` (`role_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `activity`
+--
+ALTER TABLE `activity`
+  MODIFY `activity_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `department`
@@ -134,6 +162,29 @@ ALTER TABLE `department`
 --
 ALTER TABLE `role`
   MODIFY `role_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `activity`
+--
+ALTER TABLE `activity`
+  ADD CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`department_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
