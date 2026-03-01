@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มกิจกรรม | ผู้ดูแลระบบ</title>
+
+    <link rel="stylesheet" href="../style/output.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/font.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+        rel="stylesheet">
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+
+<body class="anuphan-login dashboard">
+
+    <!-- ===== Decorative Blobs ===== -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/30 rounded-full blur-3xl animate-pulse"></div>
+        <div
+            class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]">
+        </div>
+    </div>
+
+    <div class="relative z-10 flex min-h-screen">
+
+        <!-- ===== Sidebar Overlay ===== -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden"
+            onclick="closeSidebar()"></div>
+
+        <!-- ===== Sidebar ===== -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- ===== Main Content ===== -->
+        <main class="flex-1 flex flex-col min-h-screen w-full">
+
+            <!-- Top bar -->
+            <header id="nav-container"></header>
+
+            <!-- Page Body -->
+            <div class="flex-1 p-6">
+
+                <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm text-gray-400 mb-6" data-aos="fade-down"
+                    data-aos-duration="500">
+                    <a href="index.html" class="hover:text-sky-500 transition-colors duration-200">แดชบอร์ด</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                    <span class="text-gray-600 font-medium">เพิ่มกิจกรรม</span>
+                </div>
+
+                <!-- Form Card -->
+                <div class="max-w-4xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="mb-6" data-aos="fade-up" data-aos-duration="500">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-sky-400/30">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-bold text-gray-800">เพิ่มกิจกรรมใหม่</h1>
+                                <p class="text-xs text-gray-400">กรอกข้อมูลกิจกรรมให้ครบถ้วน</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="activity-form" class="space-y-6" onsubmit="handleSubmit(event)">
+
+                        <!-- ===== Poster Upload ===== -->
+                        <div class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-blue-50 p-6"
+                            data-aos="fade-up" data-aos-duration="500" data-aos-delay="100">
+                            <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-1.5 h-4 bg-gradient-to-b from-sky-400 to-blue-500 rounded-full inline-block"></span>
+                                โปสเตอร์กิจกรรม
+                            </h2>
+
+                            <!-- Drop Zone -->
+                            <div id="poster-dropzone"
+                                class="relative w-full h-64 border-2 border-dashed border-blue-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-sky-400 hover:bg-sky-50/40 transition-all duration-300 overflow-hidden group"
+                                onclick="document.getElementById('poster-input').click()" ondragover="onDragOver(event)"
+                                ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+
+                                <!-- Preview -->
+                                <img id="poster-preview" src="" alt="poster preview"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-2xl hidden">
+
+                                <!-- Overlay on hover when image loaded -->
+                                <div id="poster-overlay"
+                                    class="absolute inset-0 bg-black/40 rounded-2xl hidden items-center justify-center">
+                                    <p class="text-white text-sm font-medium">คลิกเพื่อเปลี่ยนรูป</p>
+                                </div>
+
+                                <!-- Placeholder -->
+                                <div id="poster-placeholder"
+                                    class="flex flex-col items-center gap-3 pointer-events-none">
+                                    <div
+                                        class="w-14 h-14 bg-sky-100 rounded-2xl flex items-center justify-center group-hover:bg-sky-200 transition-colors duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-sky-400" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm font-medium text-gray-600">ลากรูปมาวาง หรือ <span
+                                                class="text-sky-500">คลิกเพื่อเลือก</span></p>
+                                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — ขนาดสูงสุด 5MB</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input id="poster-input" type="file" accept="image/*" class="hidden"
+                                onchange="onFileSelect(event)">
+
+                            <!-- Remove button -->
+                            <button type="button" id="poster-remove"
+                                class="hidden mt-3 text-xs text-red-400 hover:text-red-600 transition-colors duration-200 flex items-center gap-1"
+                                onclick="removePoster()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                ลบรูปภาพ
+                            </button>
+                        </div>
+
+                        <!-- ===== Activity Info ===== -->
+                        <div class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-blue-50 p-6"
+                            data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+                            <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-1.5 h-4 bg-gradient-to-b from-sky-400 to-blue-500 rounded-full inline-block"></span>
+                                ข้อมูลกิจกรรม
+                            </h2>
+
+                            <div class="space-y-5">
+
+                                <!-- Activity Name -->
+                                <div>
+                                    <label for="activity-name" class="block text-sm font-medium text-gray-600 mb-1.5">
+                                        ชื่อกิจกรรม <span class="text-red-400">*</span>
+                                    </label>
+                                    <input id="activity-name" name="activity_name" type="text" required
+                                        placeholder="เช่น กีฬาสีประจำปี 2568"
+                                        class="form-input w-full px-4 py-3 rounded-xl border border-blue-100 bg-sky-50/40 text-gray-700 text-sm placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 hover:border-sky-200 transition-all duration-200">
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <label for="activity-detail" class="block text-sm font-medium text-gray-600 mb-1.5">
+                                        รายละเอียดกิจกรรม
+                                    </label>
+                                    <textarea id="activity-detail" name="activity_detail" rows="4"
+                                        placeholder="อธิบายรายละเอียดกิจกรรม สถานที่จัดงาน เงื่อนไขการเข้าร่วม..."
+                                        class="form-input w-full px-4 py-3 rounded-xl border border-blue-100 bg-sky-50/40 text-gray-700 text-sm placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 hover:border-sky-200 transition-all duration-200 resize-none"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- ===== Date & Status ===== -->
+                        <div class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-blue-50 p-6"
+                            data-aos="fade-up" data-aos-duration="500" data-aos-delay="300">
+                            <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-1.5 h-4 bg-gradient-to-b from-sky-400 to-blue-500 rounded-full inline-block"></span>
+                                วันที่และสถานะ
+                            </h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Start Date -->
+                                <div>
+                                    <label for="start-time" class="block text-sm font-medium text-gray-600 mb-1.5">
+                                        วันที่เปิดกิจกรรม <span class="text-red-400">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input id="start-time" name="start_time" type="datetime-local" required
+                                            class="form-input w-full pl-10 pr-4 py-3 rounded-xl border border-blue-100 bg-sky-50/40 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 hover:border-sky-200 transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sky-400 pointer-events-none"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- End Date -->
+                                <div>
+                                    <label for="end-time" class="block text-sm font-medium text-gray-600 mb-1.5">
+                                        วันที่ปิดกิจกรรม <span class="text-red-400">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input id="end-time" name="end_time" type="datetime-local" required
+                                            class="form-input w-full pl-10 pr-4 py-3 rounded-xl border border-blue-100 bg-sky-50/40 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 hover:border-sky-200 transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sky-400 pointer-events-none"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">
+                                        สถานะ <span class="text-red-400">*</span>
+                                    </label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <!-- open -->
+                                        <label class="status-option">
+                                            <input type="radio" name="status" value="open" class="peer hidden">
+                                            <div
+                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-blue-100 bg-sky-50/40 text-sm text-gray-600 cursor-pointer peer-checked:border-green-400 peer-checked:bg-green-50 peer-checked:text-green-700 hover:border-sky-300 transition-all duration-200">
+                                                <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+                                                เปิดกิจกรรม
+                                            </div>
+                                        </label>
+                                        <!-- closed -->
+                                        <label class="status-option">
+                                            <input type="radio" name="status" value="closed" class="peer hidden"
+                                                checked>
+                                            <div
+                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-blue-100 bg-sky-50/40 text-sm text-gray-600 cursor-pointer peer-checked:border-red-400 peer-checked:bg-red-50 peer-checked:text-red-700 hover:border-sky-300 transition-all duration-200">
+                                                <span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
+                                                ปิดกิจกรรม
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- ===== Action Buttons ===== -->
+                        <div class="flex items-center justify-between gap-4 pb-8" data-aos="fade-up"
+                            data-aos-duration="500" data-aos-delay="400">
+
+                            <a href="index.html"
+                                class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-blue-100 bg-white/70 text-sm font-medium text-gray-600 hover:bg-white hover:border-sky-300 hover:text-sky-600 transition-all duration-300 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                </svg>
+                                ย้อนกลับ
+                            </a>
+
+                            <button type="submit" id="submit-btn"
+                                class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 text-white text-sm font-medium rounded-xl shadow-md shadow-sky-400/30 hover:shadow-lg hover:shadow-sky-400/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                <span id="submit-text">เพิ่มกิจกรรม</span>
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div><!-- end flex wrapper -->
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js.js"></script>
+    <script>
+        fetch('sidebar.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('sidebar-container').innerHTML = html;
+            });
+        fetch('nav.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('nav-container').innerHTML = html;
+            });
+    </script>
+    <script>
+        // ===== AOS Init =====
+        window.addEventListener('load', () => {
+            AOS.init({ once: true, easing: 'ease-out-cubic', duration: 550, offset: -30 });
+        });
+
+        // ===== Init =====
+        loadNav('เพิ่มกิจกรรม');
+
+        const token = localStorage.getItem('token');
+
+
+
+        // ===== Poster Upload =====
+        let posterFile = null;
+
+        function onFileSelect(e) {
+            handleFile(e.target.files[0]);
+        }
+
+        function onDragOver(e) {
+            e.preventDefault();
+            document.getElementById('poster-dropzone').classList.add('border-sky-400', 'bg-sky-50/60');
+        }
+
+        function onDragLeave(e) {
+            document.getElementById('poster-dropzone').classList.remove('border-sky-400', 'bg-sky-50/60');
+        }
+
+        function onDrop(e) {
+            e.preventDefault();
+            onDragLeave(e);
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({ icon: 'warning', title: 'ไฟล์ใหญ่เกินไป', text: 'กรุณาเลือกรูปที่มีขนาดไม่เกิน 5MB', confirmButtonColor: '#2563eb' });
+                return;
+            }
+            posterFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const preview = document.getElementById('poster-preview');
+                preview.src = ev.target.result;
+                preview.classList.remove('hidden');
+                document.getElementById('poster-placeholder').classList.add('hidden');
+                document.getElementById('poster-overlay').classList.remove('hidden');
+                document.getElementById('poster-overlay').classList.add('flex');
+                document.getElementById('poster-remove').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePoster() {
+            posterFile = null;
+            document.getElementById('poster-preview').src = '';
+            document.getElementById('poster-preview').classList.add('hidden');
+            document.getElementById('poster-placeholder').classList.remove('hidden');
+            document.getElementById('poster-overlay').classList.add('hidden');
+            document.getElementById('poster-overlay').classList.remove('flex');
+            document.getElementById('poster-remove').classList.add('hidden');
+            document.getElementById('poster-input').value = '';
+        }
+
+        // ===== Form Submit =====
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('activity-name').value.trim();
+            const detail = document.getElementById('activity-detail').value.trim();
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const status = document.querySelector('input[name="status"]:checked')?.value;
+
+            // Validate dates
+            if (new Date(endTime) <= new Date(startTime)) {
+                Swal.fire({ icon: 'warning', title: 'วันที่ไม่ถูกต้อง', text: 'วันที่ปิดต้องมาหลังวันที่เปิดกิจกรรม', confirmButtonColor: '#2563eb' });
+                return;
+            }
+
+            // Loading state
+            const btn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('submit-text');
+            btn.disabled = true;
+            btnText.textContent = 'กำลังบันทึก...';
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            try {
+
+                const resProfile = await fetch('http://localhost:3000/profile', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                })
+                const Profile = await resProfile.json();
+                const createdBy = Profile.user.user_id;
+                const formData = new FormData();
+                formData.append('activity_name', name);
+                formData.append('activity_detail', detail);
+                formData.append('start_time', startTime);
+                formData.append('end_time', endTime);
+                formData.append('activity_status', status);
+                formData.append('created_by', createdBy);
+                if (posterFile) formData.append('poster', posterFile);
+
+                const res = await fetch('http://localhost:3000/add/activity', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || 'เกิดข้อผิดพลาด');
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'เพิ่มกิจกรรมสำเร็จ!',
+                    text: `กิจกรรม "${name}" ถูกเพิ่มเรียบร้อยแล้ว`,
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'ตกลง'
+                });
+
+                window.location.href = 'index.html';
+
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: '#2563eb' });
+                btn.disabled = false;
+                btnText.textContent = 'เพิ่มกิจกรรม';
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,15 +1,45 @@
+// ===== Sidebar Toggle =====
 function closeSidebar() {
-    if (document.getElementById('sidebar').classList.contains('hidden')) {
-        document.getElementById('sidebar').classList.remove('hidden');
-        document.getElementById('sidebar').classList.remove('-translate-x-full');
-        document.getElementById('sidebar-overlay').classList.remove('hidden');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar || !overlay) return;
+
+    if (sidebar.classList.contains('-translate-x-full')) {
+        // Open
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.remove('hidden');
+        overlay.classList.remove('hidden');
     } else {
-        document.getElementById('sidebar').classList.add('hidden');
-        document.getElementById('sidebar').classList.add('-translate-x-full');
-        document.getElementById('sidebar-overlay').classList.add('hidden');
+        // Close
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
     }
 }
 
+// ===== Load Nav (Universal) =====
+// ใช้: loadNav('ชื่อหน้า')
+function loadNav(pageTitle) {
+    return fetch('nav.html')
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('nav-container').innerHTML = html;
+
+            // Set page title
+            const titleEl = document.getElementById('nav-page-title');
+            if (titleEl && pageTitle) titleEl.textContent = pageTitle;
+
+            // Set current date
+            const dateEl = document.getElementById('current-date');
+            if (dateEl) {
+                dateEl.textContent = new Date().toLocaleDateString('th-TH', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                    timeZone: 'Asia/Bangkok'
+                });
+            }
+        });
+}
+
+// ===== Logout =====
 function logout() {
     Swal.fire({
         title: 'ออกจากระบบ?',
@@ -21,7 +51,6 @@ function logout() {
         confirmButtonText: 'ออกจากระบบ',
         cancelButtonText: 'ยกเลิก',
         reverseButtons: true,
-        borderRadius: '1rem',
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem('token');

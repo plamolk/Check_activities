@@ -147,3 +147,12 @@ body.dashboard {
   background-size: 200% auto;
   animation: shimmer 2.5s linear infinite;
 }
+
+/* ===== Form Inputs ===== */
+.form-input {
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.form-input:focus {
+  background-color: #ffffff;
+}

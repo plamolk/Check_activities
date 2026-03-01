@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แดชบอร์ด | ผู้ดูแลระบบ</title>
 
-        <link rel="stylesheet" href="../style/output.css">
-        <link rel="stylesheet" href="../style/style.css">
-        <link rel="stylesheet" href="../style/font.css">
+    <link rel="stylesheet" href="../style/output.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/font.css">
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-            rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
-        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body class="anuphan-login dashboard">
@@ -195,7 +195,7 @@
                                         class="text-sm text-gray-600 group-hover:text-blue-600 font-medium transition-colors duration-300">เพิ่มกิจกรรมใหม่</span>
                                 </a>
 
-                                <a href="checkin.html"
+                                <a href="add_teacher.html"
                                     class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-sky-50 to-blue-50 border border-blue-100 hover:border-sky-300 hover:shadow-md hover:shadow-sky-200/50 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group">
                                     <div
                                         class="w-8 h-8 bg-gradient-to-br from-indigo-400 to-violet-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
@@ -206,7 +206,7 @@
                                         </svg>
                                     </div>
                                     <span
-                                        class="text-sm text-gray-600 group-hover:text-blue-600 font-medium transition-colors duration-300">บันทึกการเข้าร่วม</span>
+                                        class="text-sm text-gray-600 group-hover:text-blue-600 font-medium transition-colors duration-300">เพิ่มผู้รับผิดชอบ</span>
                                 </a>
 
                                 <a href="reports.html"
@@ -220,7 +220,7 @@
                                         </svg>
                                     </div>
                                     <span
-                                        class="text-sm text-gray-600 group-hover:text-blue-600 font-medium transition-colors duration-300">ออกรายงาน</span>
+                                        class="text-sm text-gray-600 group-hover:text-blue-600 font-medium transition-colors duration-300">ตรวจสอบกิจกรรม</span>
                                 </a>
 
                                 <a href="users.html"
@@ -356,43 +356,12 @@
         // ===== AOS Init =====
         window.addEventListener('load', () => {
             setTimeout(() => {
-                AOS.init({
-                    once: true,
-                    easing: 'ease-out-cubic',
-                    duration: 600,
-                    offset: -50
-                });
+                AOS.init({ once: true, easing: 'ease-out-cubic', duration: 600, offset: -50 });
             }, 100);
         });
 
-        // ===== Auth Guard =====
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace('/index.html');
-        }
-
-        let currentUser = null;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload.role_id !== 3) {
-                window.location.replace('/index.html');
-            }
-            currentUser = payload;
-            const adminNameEl = document.getElementById('admin-name');
-            if (adminNameEl && payload.username) {
-                adminNameEl.textContent = payload.username;
-            }
-        } catch (e) {
-            window.location.replace('/index.html');
-        }
-
-        // ===== Current Date =====
-        const dateEl = document.getElementById('current-date');
-        if (dateEl) {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Bangkok' };
-            dateEl.textContent = now.toLocaleDateString('th-TH', options);
-        }
+        // ===== Init =====
+        loadNav('แดชบอร์ด');
 
 
         // ===== Helper: badge HTML =====

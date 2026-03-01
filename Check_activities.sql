@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Mar 01, 2026 at 10:57 AM
+-- Generation Time: Mar 01, 2026 at 06:06 PM
 -- Server version: 9.5.0
 -- PHP Version: 8.3.26
 
@@ -33,9 +33,31 @@ CREATE TABLE `activity` (
   `activity_detail` text,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
-  `status` enum('open','closed','finished','cancelled') DEFAULT 'closed',
+  `activity_image` varchar(255) DEFAULT NULL,
+  `activity_status` enum('draft','open','closed','finished','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'draft',
   `created_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `activity`
+--
+
+INSERT INTO `activity` (`activity_id`, `activity_name`, `activity_detail`, `start_time`, `end_time`, `activity_image`, `activity_status`, `created_by`, `created_at`) VALUES
+(1, 'ทักษะด่านเพื่อนหีควยๆ', 'jfkb erufurihr', '2026-03-10 23:01:00', '2026-03-27 23:01:00', NULL, 'draft', 3, '2026-03-01 16:01:38'),
+(2, 'ควยๆๆๆๆๆๆ', '3123123213212131', '2026-03-09 23:02:00', '2026-03-21 23:02:00', NULL, 'draft', 3, '2026-03-01 16:02:21'),
+(3, 'ำ--/ๅ-ๅ-/ๅ-ๅ-ๅ-ๅ-', 'กไำไดำไดไดำไดำไดได', '2026-02-23 23:02:00', '2026-03-29 23:02:00', '1772380965773-1000033157_a08bbff1032033b996000dcabdaf30eb-24_10_2568 10_16_11 (1).jpg', 'draft', 3, '2026-03-01 16:02:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `activity_responsible`
+--
+
+CREATE TABLE `activity_responsible` (
+  `rp_id` int NOT NULL,
+  `activity_id` int NOT NULL,
+  `teacher_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -54,6 +76,7 @@ CREATE TABLE `department` (
 --
 
 INSERT INTO `department` (`department_id`, `department_name`) VALUES
+(3, 'ภาษาต่างประเทศธุรกิจบริการ'),
 (2, 'เทคโนโลยีธุรกิจดิจิทัล'),
 (1, 'เทคโนโลยีสารสนเทศ');
 
@@ -86,6 +109,7 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 CREATE TABLE `user` (
   `user_id` int NOT NULL,
   `user_code` varchar(20) DEFAULT NULL,
+  `user_thaiid` int NOT NULL,
   `user_rfid` varchar(255) DEFAULT NULL,
   `user_prefix` varchar(20) DEFAULT NULL,
   `first_name` varchar(255) NOT NULL,
@@ -103,9 +127,11 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `user_code`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `department_id`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
-(2, '67219010010', NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
-(3, NULL, NULL, NULL, 'veerakit', 'sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$ngahi2mfGjdCk/0Z8xHBPOmDE0D0jrV5KMoYIGHCurT92GN2sa6Mi', 0);
+INSERT INTO `user` (`user_id`, `user_code`, `user_thaiid`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `department_id`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
+(2, '67219010010', 0, NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
+(3, NULL, 0, NULL, NULL, 'veerakit', 'sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$ngahi2mfGjdCk/0Z8xHBPOmDE0D0jrV5KMoYIGHCurT92GN2sa6Mi', 1),
+(5, 'test', 0, NULL, NULL, 'ครูทดสอบ', 'ระบบ', NULL, NULL, 1, 2, NULL, NULL, 0),
+(6, '67202120046', 0, NULL, 'นางสาว', 'ณัฏนรี', 'คืบขุนทด', NULL, NULL, 3, 1, NULL, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -117,6 +143,14 @@ INSERT INTO `user` (`user_id`, `user_code`, `user_rfid`, `user_prefix`, `first_n
 ALTER TABLE `activity`
   ADD PRIMARY KEY (`activity_id`),
   ADD KEY `created_by` (`created_by`);
+
+--
+-- Indexes for table `activity_responsible`
+--
+ALTER TABLE `activity_responsible`
+  ADD PRIMARY KEY (`rp_id`),
+  ADD KEY `activity_id` (`activity_id`),
+  ADD KEY `teacher_id` (`teacher_id`);
 
 --
 -- Indexes for table `department`
@@ -149,13 +183,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `activity`
 --
 ALTER TABLE `activity`
-  MODIFY `activity_id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `activity_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `activity_responsible`
+--
+ALTER TABLE `activity_responsible`
+  MODIFY `rp_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `department_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `department_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -167,7 +207,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -178,6 +218,13 @@ ALTER TABLE `user`
 --
 ALTER TABLE `activity`
   ADD CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `activity_responsible`
+--
+ALTER TABLE `activity_responsible`
+  ADD CONSTRAINT `activity_responsible_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`activity_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `activity_responsible_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `user`
