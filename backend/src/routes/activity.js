@@ -5,7 +5,7 @@ const { createActivity, getActivities, createActivityDraft, getActivitiesDraft }
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/person');
+        cb(null, 'src/uploads/person');
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
