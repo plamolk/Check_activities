@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 
 
- exports.verifyToken = (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
   // 1) ดึง token จาก header
   const authHeader = req.headers.authorization;
 
@@ -18,7 +18,7 @@ const jwt = require("jsonwebtoken");
     // 2) ตรวจ token
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "dev_secret"
+      process.env.JWT_SECRET
     );
 
     // 3) เก็บข้อมูล user ไว้ใน req

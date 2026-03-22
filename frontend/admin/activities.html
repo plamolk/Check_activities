@@ -183,7 +183,7 @@
                             <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                                 <span
                                     class="w-1.5 h-4 bg-gradient-to-b from-sky-400 to-blue-500 rounded-full inline-block"></span>
-                                วันที่และสถานะ
+                                วันที่จัดกิจกรรม
                             </h2>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -222,33 +222,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Status -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-600 mb-2">
-                                        สถานะ <span class="text-red-400">*</span>
-                                    </label>
-                                    <div class="flex flex-wrap gap-3">
-                                        <!-- open -->
-                                        <label class="status-option">
-                                            <input type="radio" name="status" value="open" class="peer hidden">
-                                            <div
-                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-blue-100 bg-sky-50/40 text-sm text-gray-600 cursor-pointer peer-checked:border-green-400 peer-checked:bg-green-50 peer-checked:text-green-700 hover:border-sky-300 transition-all duration-200">
-                                                <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
-                                                เปิดกิจกรรม
-                                            </div>
-                                        </label>
-                                        <!-- closed -->
-                                        <label class="status-option">
-                                            <input type="radio" name="status" value="closed" class="peer hidden"
-                                                checked>
-                                            <div
-                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-blue-100 bg-sky-50/40 text-sm text-gray-600 cursor-pointer peer-checked:border-red-400 peer-checked:bg-red-50 peer-checked:text-red-700 hover:border-sky-300 transition-all duration-200">
-                                                <span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
-                                                ปิดกิจกรรม
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
 
                             </div>
                         </div>
@@ -375,7 +348,6 @@
             const detail = document.getElementById('activity-detail').value.trim();
             const startTime = document.getElementById('start-time').value;
             const endTime = document.getElementById('end-time').value;
-            const status = document.querySelector('input[name="status"]:checked')?.value;
 
             // Validate dates
             if (new Date(endTime) <= new Date(startTime)) {
@@ -403,7 +375,6 @@
                 formData.append('activity_detail', detail);
                 formData.append('start_time', startTime);
                 formData.append('end_time', endTime);
-                formData.append('activity_status', status);
                 formData.append('created_by', createdBy);
                 if (posterFile) formData.append('poster', posterFile);
 

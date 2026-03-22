@@ -63,6 +63,22 @@ CREATE TABLE `activity_responsible` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `attendance`
+--
+
+CREATE TABLE `attendance` (
+  `attendance_id` int NOT NULL,
+  `activity_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `check_time` datetime DEFAULT NULL,
+  `check_status` enum('present','absent','late') DEFAULT 'absent',
+  `checked_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `department`
 --
 
@@ -109,7 +125,7 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 CREATE TABLE `user` (
   `user_id` int NOT NULL,
   `user_code` varchar(20) DEFAULT NULL,
-  `user_thaiid` int NOT NULL,
+  `user_thaiid` varchar(13) DEFAULT NULL,
   `user_rfid` varchar(255) DEFAULT NULL,
   `user_prefix` varchar(20) DEFAULT NULL,
   `first_name` varchar(255) NOT NULL,
@@ -128,10 +144,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `user_code`, `user_thaiid`, `user_rfid`, `user_prefix`, `first_name`, `last_name`, `user_group_code`, `user_group_name`, `department_id`, `role_id`, `admin_user`, `admin_password`, `admin_super`) VALUES
-(2, '67219010010', 0, NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
-(3, NULL, 0, NULL, NULL, 'veerakit', 'sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$ngahi2mfGjdCk/0Z8xHBPOmDE0D0jrV5KMoYIGHCurT92GN2sa6Mi', 1),
-(5, 'test', 0, NULL, NULL, 'ครูทดสอบ', 'ระบบ', NULL, NULL, 1, 2, NULL, NULL, 0),
-(6, '67202120046', 0, NULL, 'นางสาว', 'ณัฏนรี', 'คืบขุนทด', NULL, NULL, 3, 1, NULL, NULL, 0);
+(2, '67219010010', NULL, NULL, 'นาย', 'วีระกิตต์', 'ศรีภิรมย์', NULL, NULL, 1, 1, NULL, NULL, 0),
+(3, NULL, NULL, NULL, NULL, 'veerakit', 'sriphirom', NULL, NULL, NULL, 3, 'plamolk', '$2b$10$ngahi2mfGjdCk/0Z8xHBPOmDE0D0jrV5KMoYIGHCurT92GN2sa6Mi', 1),
+(5, 'test', NULL, NULL, NULL, 'ครูทดสอบ', 'ระบบ', NULL, NULL, 1, 2, NULL, NULL, 0),
+(6, '67202120046', NULL, NULL, 'นางสาว', 'ณัฏนรี', 'คืบขุนทด', NULL, NULL, 3, 1, NULL, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -151,6 +167,15 @@ ALTER TABLE `activity_responsible`
   ADD PRIMARY KEY (`rp_id`),
   ADD KEY `activity_id` (`activity_id`),
   ADD KEY `teacher_id` (`teacher_id`);
+
+--
+-- Indexes for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD PRIMARY KEY (`attendance_id`),
+  ADD UNIQUE KEY `unique_activity_user` (`activity_id`, `user_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `checked_by` (`checked_by`);
 
 --
 -- Indexes for table `department`
@@ -192,6 +217,12 @@ ALTER TABLE `activity_responsible`
   MODIFY `rp_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `attendance`
+--
+ALTER TABLE `attendance`
+  MODIFY `attendance_id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
@@ -225,6 +256,14 @@ ALTER TABLE `activity`
 ALTER TABLE `activity_responsible`
   ADD CONSTRAINT `activity_responsible_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`activity_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `activity_responsible_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`activity_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `attendance_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `attendance_ibfk_3` FOREIGN KEY (`checked_by`) REFERENCES `user` (`user_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `user`

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const { rmsLogin } = require('../services/rms.services');
 const { splitPrefix } = require('../utils/prefix');
-const { findOrCreateDepartment } = require('../services/department');
+const { upsertUser } = require('../services/user.service');
 
 exports.login = async (req, res) => {
   try {
@@ -62,67 +62,58 @@ exports.login = async (req, res) => {
     else if (rmsUser.types === 'T') role_id = 2;
     else return res.status(400).json({ message: 'Unknown user type' });
 
-    const user_code = rmsUser.username;
+    // ===========================
+    // 🆕 Auto-Fetch Group (เฉพาะนักเรียนที่ยังไม่มีกลุ่ม)
+    // ===========================
+    let fetchedGroupCode = null;
+    let fetchedGroupName = null;
 
-    // ===========================
-    // 4️⃣ แยก prefix
-    // ===========================
-    const nameData = splitPrefix(rmsUser.first_name);
-    const prefix = nameData.prefix;
-    const first_name = nameData.first_name;
-    const last_name = rmsUser.last_name;
-
-    // ===========================
-    // 5️⃣ Department
-    // ===========================
-    const department_id = await findOrCreateDepartment(rmsUser.department);
-
-    // ===========================
-    // 6️⃣ หา user จาก user_code ก่อน
-    // ===========================
-    const [existingUser] = await db.query(
-      'SELECT user_id FROM user WHERE user_code = ?',
-      [user_code]
-    );
-
-    let user_id;
-
-    if (existingUser.length === 0) {
-      // insert ใหม่
-      const [result] = await db.query(
-        `
-        INSERT INTO user
-        (user_code, role_id, user_prefix, first_name, last_name, department_id)
-        VALUES (?, ?, ?, ?, ?, ?)
-        `,
-        [user_code, role_id, prefix, first_name, last_name, department_id]
+    if (role_id === 1) {
+      const [existing] = await db.query(
+        'SELECT user_group_code FROM user WHERE user_code = ?',
+        [rmsUser.username]
       );
 
-      user_id = result.insertId;
-    } else {
-      user_id = existingUser[0].user_id;
-
-      // update ข้อมูล
-      await db.query(
-        `
-        UPDATE user
-        SET role_id = ?,
-            user_prefix = ?,
-            first_name = ?,
-            last_name = ?,
-            department_id = ?
-        WHERE user_id = ?
-        `,
-        [role_id, prefix, first_name, last_name, department_id, user_id]
-      );
+      // ถ้านักเรียนคนนี้ยังไม่เคยถูกบันทึกกลุ่ม
+      if (existing.length === 0 || !existing[0].user_group_code) {
+        const { rmsGetAllStudents } = require('../services/rms.services');
+        try {
+          const stdData = await rmsGetAllStudents();
+          if (stdData && stdData.result) {
+            const studentMatch = stdData.result.find(s => String(s.std_code) === String(rmsUser.username));
+            if (studentMatch) {
+              fetchedGroupCode = studentMatch.std_group_code || null;
+              fetchedGroupName = studentMatch.std_group_name || null;
+            }
+          }
+        } catch (err) {
+          console.error("Auto-fetch student group failed:", err.message);
+        }
+      }
     }
 
     // ===========================
-    // 7️⃣ JWT
+    // 4️⃣ แยก prefix + upsertUser
+    // ===========================
+    const nameData = splitPrefix(rmsUser.first_name);
+
+    const user_id = await upsertUser({
+      user_code: rmsUser.username,
+      role_id,
+      user_prefix: nameData.prefix,
+      first_name: nameData.first_name,
+      last_name: rmsUser.last_name,
+      department_name: rmsUser.department || null,
+      user_group_code: fetchedGroupCode,
+      user_group_name: fetchedGroupName,
+    });
+
+    // ===========================
+    // 5️⃣ JWT
     // ===========================
     const token = jwt.sign(
       {
-        user_id,     // internal id
+        user_id,
         role_id,
         admin_super: 0
       },

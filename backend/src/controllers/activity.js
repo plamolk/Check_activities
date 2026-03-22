@@ -1,17 +1,17 @@
 const db = require('../config/db');
 exports.createActivity = async (req, res) => {
     try {
-        const { activity_name, activity_detail, start_time, end_time, activity_status, created_by } = req.body;
+        const { activity_name, activity_detail, start_time, end_time, created_by } = req.body;
 
         const activity_image = req.file ? req.file.filename : null;
 
         const [result] = await db.query(
             `
             INSERT INTO activity
-            (activity_name, activity_detail, start_time, end_time, activity_status, created_by, activity_image)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (activity_name, activity_detail, start_time, end_time, created_by, activity_image)
+            VALUES (?, ?, ?, ?, ?, ?)
             `,
-            [activity_name, activity_detail, start_time, end_time, activity_status, created_by, activity_image]
+            [activity_name, activity_detail, start_time, end_time, created_by, activity_image]
         );
 
         res.json({ message: 'Activity created successfully', activity_id: result.insertId });
