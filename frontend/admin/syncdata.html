@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ซิงค์ข้อมูล | ผู้ดูแลระบบ</title>
+
+    <link rel="stylesheet" href="../style/output.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/font.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+        rel="stylesheet">
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        /* Spinner animation */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin {
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Pulse dot for syncing state */
+        @keyframes pulseDot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .pulse-dot {
+            animation: pulseDot 1.2s ease-in-out infinite;
+        }
+
+        /* Log line fade in */
+        @keyframes logIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-line {
+            animation: logIn 0.2s ease-out forwards;
+        }
+
+        /* Drag-over highlight */
+        .drag-over {
+            border-color: #38bdf8 !important;
+            background-color: rgba(240, 249, 255, 0.6) !important;
+        }
+
+        /* File dropzone */
+        #excel-dropzone {
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+    </style>
+</head>
+
+<body class="anuphan-login dashboard">
+
+    <!-- ===== Decorative Blobs ===== -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/30 rounded-full blur-3xl animate-pulse"></div>
+        <div
+            class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]">
+        </div>
+    </div>
+
+    <div class="relative z-10 flex min-h-screen">
+
+        <!-- ===== Sidebar Overlay ===== -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden"
+            onclick="closeSidebar()"></div>
+
+        <!-- ===== Sidebar ===== -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- ===== Main Content ===== -->
+        <main class="flex-1 flex flex-col min-h-screen w-full">
+
+            <!-- Top bar -->
+            <header id="nav-container"></header>
+
+            <!-- Page Body -->
+            <div class="flex-1 p-6 space-y-6">
+
+                <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm text-gray-400" data-aos="fade-down" data-aos-duration="500">
+                    <a href="index.html" class="hover:text-sky-500 transition-colors duration-200">แดชบอร์ด</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                    <span class="text-gray-600 font-medium">ซิงค์ข้อมูล</span>
+                </div>
+
+                <!-- ===== Page Header ===== -->
+                <div class="flex items-center gap-4" data-aos="fade-up" data-aos-duration="500">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-400/30 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">ซิงค์และนำเข้าข้อมูล</h1>
+                        <p class="text-xs text-gray-400">ดึงข้อมูลครูและนักเรียนจากระบบ RMS หรือนำเข้าจาก Excel</p>
+                    </div>
+                    <!-- Superadmin badge -->
+                    <span
+                        class="ml-auto flex items-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                        </svg>
+                        สิทธิ์ Super Admin
+                    </span>
+                </div>
+
+                <!-- ===== Locked (Non-superadmin) State ===== -->
+                <div id="access-denied" class="hidden" data-aos="fade-up">
+                    <div
+                        class="max-w-md mx-auto mt-16 text-center bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-red-100 p-10">
+                        <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-gray-700 mb-2">ไม่มีสิทธิ์เข้าถึง</h2>
+                        <p class="text-sm text-gray-400 mb-6">หน้านี้สงวนไว้สำหรับ Super Admin
+                            เท่านั้น<br>กรุณาติดต่อผู้ดูแลระบบ</p>
+                        <a href="index.html"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 text-white text-sm font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                            กลับหน้าแดชบอร์ด
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ===== Main Content (superadmin only) ===== -->
+                <div id="main-content" class="hidden space-y-6">
+
+                    <!-- ===== RMS Sync Section ===== -->
+                    <section
+                        class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-blue-50 overflow-hidden"
+                        data-aos="fade-up" data-aos-duration="500" data-aos-delay="100">
+                        <div class="flex items-center gap-3 px-6 py-4 border-b border-blue-50">
+                            <div
+                                class="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-semibold text-gray-700">ซิงค์ข้อมูลจากระบบ RMS</h2>
+                                <p class="text-xs text-gray-400">ดึงข้อมูลล่าสุดจาก RMS มาอัปเดตในระบบ (ข้อมูลเดิมจะถูก
+                                    Update ไม่ลบและไม่ซ้ำ)</p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                            <!-- Sync Teachers -->
+                            <div
+                                class="group relative bg-gradient-to-br from-sky-50 to-blue-50 border border-blue-100 rounded-2xl p-5 hover:border-sky-300 hover:shadow-md hover:shadow-sky-200/40 transition-all duration-300">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-md shadow-sky-300/40 flex-shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-700">ดึงข้อมูลครู</h3>
+                                        <p class="text-xs text-gray-400">Sync ครูทั้งหมดจาก RMS</p>
+                                    </div>
+                                </div>
+                                <button id="btn-sync-teachers" onclick="syncData('teachers')"
+                                    class="w-full mt-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-sky-400 to-cyan-400 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md hover:shadow-sky-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0">
+                                    <svg id="icon-teachers" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                    <span id="text-teachers">ซิงค์ครู</span>
+                                </button>
+                            </div>
+
+                            <!-- Sync Students -->
+                            <div
+                                class="group relative bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100 rounded-2xl p-5 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-200/40 transition-all duration-300">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-violet-500 rounded-xl flex items-center justify-center shadow-md shadow-indigo-300/40 flex-shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-700">ดึงข้อมูลนักเรียน</h3>
+                                        <p class="text-xs text-gray-400">Sync นักเรียนทั้งหมดจาก RMS</p>
+                                    </div>
+                                </div>
+                                <button id="btn-sync-students" onclick="syncData('students')"
+                                    class="w-full mt-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-400 to-violet-500 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md hover:shadow-indigo-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0">
+                                    <svg id="icon-students" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                    <span id="text-students">ซิงค์นักเรียน</span>
+                                </button>
+                            </div>
+
+                            <!-- Sync All -->
+                            <div
+                                class="group relative bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md hover:shadow-blue-200/40 transition-all duration-300">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-300/40 flex-shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-700">ดึงข้อมูลทั้งหมด</h3>
+                                        <p class="text-xs text-gray-400">Sync ครูและนักเรียนพร้อมกัน</p>
+                                    </div>
+                                </div>
+                                <button id="btn-sync-all" onclick="syncData('all')"
+                                    class="w-full mt-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md hover:shadow-blue-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0">
+                                    <svg id="icon-all" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                    <span id="text-all">ซิงค์ทั้งหมด</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Sync Log -->
+                        <div id="sync-log-wrapper" class="hidden px-6 pb-6">
+                            <div
+                                class="bg-gray-900 rounded-xl p-4 min-h-[120px] max-h-64 overflow-y-auto font-mono text-xs">
+                                <div class="flex items-center gap-2 text-gray-400 mb-2 pb-2 border-b border-gray-700">
+                                    <span id="log-dot" class="w-2 h-2 rounded-full bg-sky-400 pulse-dot"></span>
+                                    <span id="log-title">กำลังซิงค์ข้อมูล...</span>
+                                </div>
+                                <div id="sync-log" class="space-y-0.5 text-green-400"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Excel Import Section ===== -->
+                    <section
+                        class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-blue-50 overflow-hidden"
+                        data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+                        <div class="flex items-center gap-3 px-6 py-4 border-b border-blue-50">
+                            <div
+                                class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-semibold text-gray-700">นำเข้าข้อมูลจาก Excel</h2>
+                                <p class="text-xs text-gray-400">อัปโหลดไฟล์ .xlsx หรือ .xls สำหรับนำเข้าข้อมูลผู้ใช้งาน
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 max-w-2xl">
+                            <!-- Drop Zone -->
+                            <div id="excel-dropzone"
+                                class="relative w-full border-2 border-dashed border-emerald-200 rounded-2xl flex flex-col items-center justify-center py-10 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/40 transition-all duration-300"
+                                onclick="document.getElementById('excel-input').click()"
+                                ondragover="onExcelDragOver(event)" ondragleave="onExcelDragLeave(event)"
+                                ondrop="onExcelDrop(event)">
+
+                                <div id="excel-placeholder" class="flex flex-col items-center gap-3">
+                                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-emerald-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                        </svg>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm font-medium text-gray-600">ลากไฟล์มาวาง หรือ <span
+                                                class="text-emerald-500">คลิกเพื่อเลือกไฟล์</span></p>
+                                        <p class="text-xs text-gray-400 mt-1">.xlsx, .xls — ขนาดสูงสุด 10MB</p>
+                                    </div>
+                                </div>
+
+                                <!-- File Selected State -->
+                                <div id="excel-selected" class="hidden flex-col items-center gap-2">
+                                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-emerald-500"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p id="excel-filename" class="text-sm font-semibold text-emerald-600"></p>
+                                    <p class="text-xs text-gray-400">คลิกเพื่อเปลี่ยนไฟล์</p>
+                                </div>
+                            </div>
+
+                            <input id="excel-input" type="file" accept=".xlsx,.xls" class="hidden"
+                                onchange="onExcelSelect(event)">
+
+                            <!-- Actions -->
+                            <div class="flex items-center gap-3 mt-4">
+                                <button id="btn-import" onclick="importExcel()" disabled
+                                    class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md hover:shadow-emerald-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0">
+                                    <svg id="icon-import" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                    </svg>
+                                    <span id="text-import">นำเข้าข้อมูล</span>
+                                </button>
+                                <button id="btn-clear-excel" onclick="clearExcel()"
+                                    class="hidden text-xs text-red-400 hover:text-red-600 transition-colors duration-200 flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    ล้างไฟล์
+                                </button>
+                            </div>
+
+                            <!-- Import result -->
+                            <div id="import-result" class="hidden mt-4 p-4 rounded-xl text-sm border"></div>
+                        </div>
+                    </section>
+
+                </div>
+                <!-- end main-content -->
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js.js"></script>
+    <script>
+        // ===== Load partials =====
+        fetch('sidebar.html').then(r => r.text()).then(html => {
+            document.getElementById('sidebar-container').innerHTML = html;
+        });
+        fetch('nav.html').then(r => r.text()).then(html => {
+            document.getElementById('nav-container').innerHTML = html;
+        });
+
+        // ===== AOS =====
+        window.addEventListener('load', () => {
+            AOS.init({ once: true, easing: 'ease-out-cubic', duration: 550, offset: -30 });
+        });
+
+        loadNav('ซิงค์ข้อมูล');
+
+        const token = localStorage.getItem('token');
+
+        // ===== Superadmin Check =====
+        async function checkAccess() {
+            if (!token) {
+                window.location.replace('/index.html');
+                return;
+            }
+            try {
+                const res = await fetch('/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) { window.location.replace('/index.html'); return; }
+
+                const data = await res.json();
+                const user = data.user || data;
+
+                if (user.admin_super === 1 || user.admin_super === true) {
+                    document.getElementById('main-content').classList.remove('hidden');
+                } else {
+                    document.getElementById('access-denied').classList.remove('hidden');
+                }
+            } catch (e) {
+                document.getElementById('access-denied').classList.remove('hidden');
+            }
+        }
+
+        checkAccess();
+
+        // ===== Sync helpers =====
+        const SYNC_ENDPOINTS = {
+            teachers: { url: '/admin/sync-teachers', label: 'ครู' },
+            students: { url: '/admin/sync-students', label: 'นักเรียน' },
+            all: { url: '/admin/sync-all', label: 'ทั้งหมด' },
+        };
+
+        function addLog(text, type = 'info') {
+            const log = document.getElementById('sync-log');
+            const colors = { info: 'text-green-400', warn: 'text-yellow-400', error: 'text-red-400', muted: 'text-gray-400' };
+            const line = document.createElement('div');
+            line.className = `log-line ${colors[type] || 'text-green-400'}`;
+            line.textContent = `[${new Date().toLocaleTimeString('th-TH')}] ${text}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function setLoading(type, loading) {
+            const btn = document.getElementById(`btn-sync-${type}`);
+            const icon = document.getElementById(`icon-${type}`);
+            const text = document.getElementById(`text-${type}`);
+            const labels = { teachers: 'ซิงค์ครู', students: 'ซิงค์นักเรียน', all: 'ซิงค์ทั้งหมด' };
+
+            if (loading) {
+                btn.disabled = true;
+                icon.classList.add('spin');
+                text.textContent = 'กำลังดึงข้อมูล...';
+            } else {
+                btn.disabled = false;
+                icon.classList.remove('spin');
+                text.textContent = labels[type];
+            }
+        }
+
+        function disableAllSyncBtns(disable) {
+            ['teachers', 'students', 'all'].forEach(t => {
+                document.getElementById(`btn-sync-${t}`).disabled = disable;
+            });
+        }
+
+        async function syncData(type) {
+            const { url, label } = SYNC_ENDPOINTS[type];
+
+            // Confirm
+            const confirmed = await Swal.fire({
+                title: `ซิงค์ข้อมูล${label}?`,
+                text: `ระบบจะดึงข้อมูล${label}ล่าสุดจาก RMS\nข้อมูลเดิมจะถูกอัปเดต ไม่ลบหรือซ้ำ`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: `ดำเนินการ`,
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true,
+            });
+            if (!confirmed.isConfirmed) return;
+
+            // Show log panel
+            const logWrapper = document.getElementById('sync-log-wrapper');
+            const logEl = document.getElementById('sync-log');
+            const logTitle = document.getElementById('log-title');
+            const logDot = document.getElementById('log-dot');
+            logWrapper.classList.remove('hidden');
+            logEl.innerHTML = '';
+            logTitle.textContent = `กำลังซิงค์ข้อมูล${label}...`;
+            logDot.className = 'w-2 h-2 rounded-full bg-sky-400 pulse-dot';
+
+            disableAllSyncBtns(true);
+            setLoading(type, true);
+            addLog(`เริ่มซิงค์ข้อมูล${label}...`);
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'เกิดข้อผิดพลาด');
+                }
+
+                // Log result details
+                if (data.total !== undefined) {
+                    addLog(`ทั้งหมด: ${data.total} รายการ`, 'info');
+                    addLog(`เพิ่มใหม่: ${data.inserted ?? 0} | อัปเดต: ${data.updated ?? 0}`, 'info');
+                    if (data.errors > 0) addLog(`มีข้อผิดพลาด: ${data.errors} รายการ`, 'warn');
+                }
+
+                // sync-all has nested teachers/students
+                if (data.results) {
+                    if (data.results.teachers) {
+                        const t = data.results.teachers;
+                        addLog(`[ครู] ทั้งหมด: ${t.total} | เพิ่มใหม่: ${t.inserted} | อัปเดต: ${t.updated}`, 'info');
+                        if (t.errors > 0) addLog(`[ครู] มีข้อผิดพลาด: ${t.errors} รายการ`, 'warn');
+                    }
+                    if (data.results.students) {
+                        const s = data.results.students;
+                        addLog(`[นักเรียน] ทั้งหมด: ${s.total} | เพิ่มใหม่: ${s.inserted} | อัปเดต: ${s.updated}`, 'info');
+                        if (s.errors > 0) addLog(`[นักเรียน] มีข้อผิดพลาด: ${s.errors} รายการ`, 'warn');
+                    }
+                }
+
+                addLog(`ซิงค์ข้อมูล${label}สำเร็จ ✓`, 'info');
+                logTitle.textContent = `ซิงค์ข้อมูล${label}เสร็จสิ้น`;
+                logDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: `ซิงค์ข้อมูล${label}สำเร็จ!`,
+                    text: data.message || `ดึงข้อมูล${label}เรียบร้อยแล้ว`,
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'ตกลง',
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+
+            } catch (err) {
+                addLog(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
+                logTitle.textContent = 'ซิงค์ไม่สำเร็จ';
+                logDot.className = 'w-2 h-2 rounded-full bg-red-400';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ซิงค์ไม่สำเร็จ',
+                    text: err.message,
+                    confirmButtonColor: '#2563eb',
+                });
+            } finally {
+                disableAllSyncBtns(false);
+                setLoading(type, false);
+            }
+        }
+
+        // ===== Excel Import =====
+        let excelFile = null;
+
+        function onExcelSelect(e) {
+            handleExcelFile(e.target.files[0]);
+        }
+
+        function onExcelDragOver(e) {
+            e.preventDefault();
+            document.getElementById('excel-dropzone').classList.add('drag-over');
+        }
+
+        function onExcelDragLeave(e) {
+            document.getElementById('excel-dropzone').classList.remove('drag-over');
+        }
+
+        function onExcelDrop(e) {
+            e.preventDefault();
+            onExcelDragLeave(e);
+            const file = e.dataTransfer.files[0];
+            if (file) handleExcelFile(file);
+        }
+
+        function handleExcelFile(file) {
+            if (!file) return;
+            const allowed = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+            if (!allowed.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+                Swal.fire({ icon: 'warning', title: 'ไฟล์ไม่ถูกต้อง', text: 'กรุณาเลือกเฉพาะไฟล์ .xlsx หรือ .xls', confirmButtonColor: '#2563eb' });
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                Swal.fire({ icon: 'warning', title: 'ไฟล์ใหญ่เกินไป', text: 'กรุณาเลือกไฟล์ที่มีขนาดไม่เกิน 10MB', confirmButtonColor: '#2563eb' });
+                return;
+            }
+            excelFile = file;
+            document.getElementById('excel-placeholder').classList.add('hidden');
+            document.getElementById('excel-selected').classList.remove('hidden');
+            document.getElementById('excel-selected').classList.add('flex');
+            document.getElementById('excel-filename').textContent = file.name;
+            document.getElementById('btn-import').disabled = false;
+            document.getElementById('btn-clear-excel').classList.remove('hidden');
+            document.getElementById('import-result').classList.add('hidden');
+        }
+
+        function clearExcel() {
+            excelFile = null;
+            document.getElementById('excel-input').value = '';
+            document.getElementById('excel-placeholder').classList.remove('hidden');
+            document.getElementById('excel-selected').classList.add('hidden');
+            document.getElementById('excel-selected').classList.remove('flex');
+            document.getElementById('excel-filename').textContent = '';
+            document.getElementById('btn-import').disabled = true;
+            document.getElementById('btn-clear-excel').classList.add('hidden');
+            document.getElementById('import-result').classList.add('hidden');
+        }
+
+        async function importExcel() {
+            if (!excelFile) return;
+
+            const confirmed = await Swal.fire({
+                title: 'นำเข้าข้อมูลจาก Excel?',
+                text: `ไฟล์: ${excelFile.name}\nข้อมูลเดิมที่ตรงกันจะถูกอัปเดต`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'นำเข้า',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true,
+            });
+            if (!confirmed.isConfirmed) return;
+
+            // Loading state
+            const btn = document.getElementById('btn-import');
+            const icon = document.getElementById('icon-import');
+            const text = document.getElementById('text-import');
+            btn.disabled = true;
+            icon.classList.add('spin');
+            text.textContent = 'กำลังนำเข้า...';
+
+            const formData = new FormData();
+            formData.append('file', excelFile);
+
+            try {
+                const res = await fetch('/admin/import-users', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData,
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.message || 'เกิดข้อผิดพลาด');
+
+                // Show result
+                const resultEl = document.getElementById('import-result');
+                resultEl.classList.remove('hidden', 'bg-red-50', 'border-red-200', 'text-red-700', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                resultEl.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                resultEl.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <p class="font-semibold">นำเข้าข้อมูลสำเร็จ!</p>
+                            <p class="text-xs mt-0.5 opacity-80">${data.message || ''}</p>
+                            ${data.inserted !== undefined ? `<p class="text-xs mt-1 opacity-70">เพิ่มใหม่: ${data.inserted} | อัปเดต: ${data.updated ?? 0} | ข้อผิดพลาด: ${data.errors ?? 0}</p>` : ''}
+                        </div>
+                    </div>`;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'นำเข้าสำเร็จ!',
+                    text: data.message || 'นำเข้าข้อมูลจาก Excel เรียบร้อยแล้ว',
+                    confirmButtonColor: '#2563eb',
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+
+                clearExcel();
+
+            } catch (err) {
+                const resultEl = document.getElementById('import-result');
+                resultEl.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                resultEl.classList.add('bg-red-50', 'border-red-200', 'text-red-700');
+                resultEl.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                        </svg>
+                        <div>
+                            <p class="font-semibold">นำเข้าไม่สำเร็จ</p>
+                            <p class="text-xs mt-0.5 opacity-80">${err.message}</p>
+                        </div>
+                    </div>`;
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: err.message,
+                    confirmButtonColor: '#2563eb',
+                });
+            } finally {
+                btn.disabled = false;
+                icon.classList.remove('spin');
+                text.textContent = 'นำเข้าข้อมูล';
+            }
+        }
+    </script>
+
+</body>
+
+</html>

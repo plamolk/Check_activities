@@ -281,6 +281,30 @@
 
         // ===== Init =====
         loadNav('เพิ่มกิจกรรม');
+        
+        function setMinDateTime() {
+            const now = new Date();
+            // Offset to local timezone
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const localISO = now.toISOString().slice(0, 16);
+            
+            const startInput = document.getElementById('start-time');
+            const endInput = document.getElementById('end-time');
+            
+            // Cannot be in the past
+            startInput.min = localISO;
+            
+            startInput.addEventListener('change', (e) => {
+                if(e.target.value) {
+                    endInput.min = e.target.value;
+                    if(endInput.value && endInput.value < e.target.value) {
+                        endInput.value = e.target.value; 
+                    }
+                }
+            });
+        }
+        
+        setMinDateTime();
 
         const token = localStorage.getItem('token');
 

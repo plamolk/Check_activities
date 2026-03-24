@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เพิ่มผู้รับผิดชอบ | ผู้ดูแลระบบ</title>
+    <title>แก้ไขกิจกรรมและเพิ่มผู้รับผิดชอบ | ผู้ดูแลระบบ</title>
 
     <link rel="stylesheet" href="../style/output.css">
     <link rel="stylesheet" href="../style/style.css">
@@ -12,12 +12,46 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        /* ===== Searchable Dropdown ===== */
+        .teacher-dropdown { position: relative; }
+        .teacher-dropdown-menu {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: white; border: 1.5px solid #bae6fd; border-radius: 14px;
+            box-shadow: 0 8px 32px 0 rgba(14,165,233,0.13); z-index: 200;
+            max-height: 220px; overflow-y: auto; display: none; padding: 4px 0;
+        }
+        .teacher-dropdown-menu.open { display: block; }
+        .teacher-dropdown-item {
+            display: flex; align-items: center; gap: 10px; padding: 7px 14px;
+            cursor: pointer; transition: background 0.15s; border-radius: 8px; margin: 0 4px;
+        }
+        .teacher-dropdown-item:hover, .teacher-dropdown-item.active { background: #f0f9ff; }
+        .teacher-dropdown-item .t-avatar {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: linear-gradient(135deg,#38bdf8,#3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: white; font-size: 12px; font-weight: 700;
+        }
+        .teacher-dropdown-item .t-name { font-size: 13px; font-weight: 500; color: #374151; }
+        .teacher-dropdown-item .t-code { font-size: 10px; color: #9ca3af; }
+        .teacher-dropdown-empty, .teacher-dropdown-loading {
+            padding: 14px; text-align: center; font-size: 12px; color: #9ca3af;
+        }
+
+        /* Activity Select styling */
+        .act-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
 </head>
 
 <body class="anuphan-login dashboard">
@@ -25,172 +59,118 @@
     <!-- ===== Decorative Blobs ===== -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-            class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]">
-        </div>
-        <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]">
-        </div>
+        <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]"></div>
     </div>
 
     <div class="relative z-10 flex min-h-screen">
-
-        <!-- Sidebar Overlay -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden"
-            onclick="closeSidebar()"></div>
-
-        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden" onclick="closeSidebar()"></div>
         <aside id="sidebar-container"></aside>
 
-        <!-- Main -->
         <main class="flex-1 flex flex-col min-h-screen w-full">
             <header id="nav-container"></header>
 
-            <div class="flex-1 p-6">
+            <div class="flex-1 p-6 max-w-4xl mx-auto w-full">
 
                 <!-- Breadcrumb -->
-                <div class="flex items-center gap-2 text-sm text-gray-400 mb-6" data-aos="fade-down"
-                    data-aos-duration="500">
+                <div class="flex items-center gap-2 text-sm text-gray-400 mb-6" data-aos="fade-down" data-aos-duration="500">
                     <a href="index.html" class="hover:text-sky-500 transition-colors duration-200">แดชบอร์ด</a>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                    <span class="text-gray-600 font-medium">เพิ่มผู้รับผิดชอบ</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    <span class="text-gray-600 font-medium">แก้ไขกิจกรรม</span>
                 </div>
 
                 <!-- Page Header -->
                 <div class="flex items-center gap-3 mb-6" data-aos="fade-up" data-aos-duration="500">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-sky-400/30">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                        </svg>
+                    <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-sky-400/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.89 1.125l-2.816.942a.75.75 0 01-.95-.95l.942-2.816a4.5 4.5 0 011.125-1.89l13.6-13.6zM18 6.75l-1.5-1.5" /></svg>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800">เพิ่มผู้รับผิดชอบกิจกรรม</h1>
-                        <p class="text-xs text-gray-400">กิจกรรมที่รอการกำหนดผู้รับผิดชอบ</p>
+                        <h1 class="text-xl font-bold text-gray-800">แก้ไขกิจกรรมและกำหนดผู้รับผิดชอบ</h1>
+                        <p class="text-xs text-gray-400">เลือกกิจกรรมฉบับร่าง เพื่อตรวจสอบข้อมูลและเพิ่มรายชื่อครู</p>
                     </div>
                 </div>
 
-                <!-- Activity List -->
-                <div id="activity-list" class="space-y-4">
-                    <!-- Loading skeleton -->
-                    <div class="skeleton-card bg-white/60 rounded-2xl p-5 border border-blue-50 animate-pulse"
-                        data-aos="fade-up" data-aos-duration="400">
-                        <div class="h-4 bg-sky-100 rounded-lg w-1/3 mb-3"></div>
-                        <div class="h-3 bg-sky-50 rounded-lg w-2/4 mb-2"></div>
-                        <div class="h-3 bg-sky-50 rounded-lg w-1/4"></div>
-                    </div>
-                    <div class="skeleton-card bg-white/60 rounded-2xl p-5 border border-blue-50 animate-pulse"
-                        data-aos="fade-up" data-aos-duration="400" data-aos-delay="80">
-                        <div class="h-4 bg-sky-100 rounded-lg w-2/5 mb-3"></div>
-                        <div class="h-3 bg-sky-50 rounded-lg w-1/3 mb-2"></div>
-                        <div class="h-3 bg-sky-50 rounded-lg w-1/5"></div>
-                    </div>
+                <!-- Step 1: Select Activity -->
+                <div class="bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-blue-50 shadow-sm mb-6" data-aos="fade-up" data-aos-delay="100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">เลือกกิจกรรม </label>
+                    <select id="activity-select" class="act-select w-full px-4 py-3 rounded-xl border border-blue-100 bg-white/80 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all duration-200" onchange="onActivitySelected()">
+                        <option value="">-- กำลังโหลดกิจกรรมฉบับร่าง... --</option>
+                    </select>
                 </div>
 
-                <!-- Empty State -->
-                <div id="empty-state" class="hidden flex-col items-center justify-center py-24" data-aos="fade-up">
-                    <div class="w-20 h-20 bg-sky-50 rounded-3xl flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sky-300" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                <!-- Activity Details & Edit Section (Hidden initially) -->
+                <div id="edit-section" class="hidden space-y-6" data-aos="fade-up" data-aos-delay="200">
+                    
+                    <!-- Activity Info Readonly -->
+                    <div class="bg-white/70 backdrop-blur-xl rounded-2xl border border-blue-50 shadow-sm overflow-hidden flex flex-col">
+                        <div id="act-poster-container" class="relative w-full h-64 md:h-80 bg-gray-900 flex-shrink-0 transition-opacity duration-300">
+                            <!-- Image injected via JS -->
+                        </div>
+                        <div class="p-6 flex-1 min-w-0">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200 mb-3">สถานะ: Draft</span>
+                            <h2 id="act-title" class="text-lg font-bold text-gray-800 mb-2">ชื่อกิจกรรม</h2>
+                            <p id="act-detail" class="text-sm text-gray-500 mb-4 whitespace-pre-line leading-relaxed">รายละเอียดกิจกรรม...</p>
+                            
+                            <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-600 bg-sky-50/50 p-3 rounded-xl border border-blue-50/50">
+                                <div class="flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span id="act-start">เริ่ม: -</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-gray-400 hidden md:block">|</div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span id="act-end">สิ้นสุด: -</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-gray-500 font-medium">ไม่มีกิจกรรมที่รอดำเนินการ</p>
-                    <p class="text-gray-400 text-sm mt-1">กิจกรรมทั้งหมดมีผู้รับผิดชอบแล้ว</p>
-                    <a href="activities.html"
-                        class="mt-5 px-5 py-2 bg-gradient-to-r from-sky-400 to-blue-500 text-white text-sm font-medium rounded-xl shadow-md hover:-translate-y-0.5 transition-all duration-300">+
-                        เพิ่มกิจกรรมใหม่</a>
+
+                    <!-- Teacher Management -->
+                    <div class="bg-white/70 backdrop-blur-xl rounded-2xl border border-blue-50 shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                                รายชื่อผู้รับผิดชอบกิจกรรม
+                            </h3>
+                            <span id="teacher-count-badge" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">0 คน</span>
+                        </div>
+
+                        <!-- Dropdown Input -->
+                        <div class="teacher-dropdown mb-5" id="teacher-dropdown-wrap">
+                            <div class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-blue-100 bg-white shadow-inner focus-within:ring-2 focus-within:ring-sky-300 focus-within:border-sky-300 transition-all duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                <input id="teacher-search-input" type="text" autocomplete="off"
+                                    placeholder="ค้นหาชื่อครู หรือ รหัสประจำตัว (เพิ่มได้มากกว่า 1 ท่าน)..."
+                                    class="flex-1 text-sm text-gray-700 placeholder:text-gray-400 bg-transparent outline-none"
+                                    oninput="onTeacherSearch()" onfocus="openTeacherDropdown()" onkeydown="onTeacherSearchKey(event)">
+                                <span id="teacher-search-clear" class="hidden cursor-pointer text-gray-300 hover:text-red-400 transition-colors" onclick="clearTeacherSearch()">✕</span>
+                            </div>
+                            <div id="teacher-dropdown-menu" class="teacher-dropdown-menu">
+                                <div class="teacher-dropdown-loading">กำลังโหลดรายชื่อครู...</div>
+                            </div>
+                            <p id="teacher-input-error" class="text-xs text-red-400 mt-2 hidden">ครูท่านนี้ถูกเพิ่มแล้ว</p>
+                        </div>
+
+                        <!-- Teacher List Display -->
+                        <div id="teacher-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[60px]">
+                            <!-- Teacher chips injected via JS -->
+                        </div>
+                        <p id="teacher-empty-msg" class="text-sm text-gray-400 text-center py-6 border-2 border-dashed border-blue-50 rounded-xl mt-3">ยังไม่มีผู้รับผิดชอบ กรุณาค้นหาและเลือกจากช่องด้านบน</p>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end gap-3 mt-6">
+                        <button id="btn-save" onclick="saveActivity()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                            บันทึก
+                        </button>
+                    </div>
+
                 </div>
 
             </div>
         </main>
-    </div>
-
-    <!-- ===== Modal: เพิ่มผู้รับผิดชอบ ===== -->
-    <div id="teacher-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
-
-        <!-- Modal Box -->
-        <div
-            class="relative bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-blue-100">
-
-            <!-- Modal Header -->
-            <div
-                class="sticky top-0 bg-white/98 backdrop-blur-xl px-6 pt-6 pb-4 border-b border-blue-50 flex items-center justify-between z-10 rounded-t-3xl">
-                <div class="flex-1 min-w-0 pr-4">
-                    <h3 class="text-base font-bold text-gray-800">ผู้รับผิดชอบกิจกรรม</h3>
-                    <p id="modal-activity-name" class="text-xs text-sky-500 mt-0.5 truncate">—</p>
-                </div>
-                <button onclick="closeModal()"
-                    class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-gray-400 transition-all duration-200 cursor-pointer flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="px-6 py-5 space-y-5">
-
-                <!-- Current Responsible List -->
-                <div>
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                        ผู้รับผิดชอบที่เพิ่มแล้ว</p>
-                    <div id="teacher-list" class="space-y-2 min-h-[48px]">
-                        <p id="teacher-empty-msg" class="text-sm text-gray-300 text-center py-3">ยังไม่มีผู้รับผิดชอบ
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Add Teacher Form -->
-                <div class="bg-sky-50/60 rounded-2xl p-4 border border-blue-100">
-                    <p class="text-xs font-semibold text-gray-600 mb-3 flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-sky-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        เพิ่มผู้รับผิดชอบ
-                    </p>
-                    <div class="flex gap-2">
-                        <input id="teacher-id-input" type="text" placeholder="รหัสผู้สอน / ID"
-                            class="form-input flex-1 px-3 py-2.5 rounded-xl border border-blue-100 bg-white text-gray-700 text-sm placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all duration-200"
-                            onkeydown="if(event.key==='Enter'){addTeacher();}">
-                        <button onclick="addTeacher()"
-                            class="px-4 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 text-white text-sm font-medium rounded-xl shadow-md shadow-sky-300/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer flex-shrink-0">
-                            เพิ่ม
-                        </button>
-                    </div>
-                    <p id="teacher-input-error" class="text-xs text-red-400 mt-1.5 hidden">กรุณากรอกรหัสผู้สอน</p>
-                </div>
-
-            </div>
-
-            <!-- Modal Footer -->
-            <div
-                class="sticky bottom-0 bg-white/98 backdrop-blur-xl px-6 py-4 border-t border-blue-50 flex items-center gap-3 rounded-b-3xl">
-                <button onclick="closeModal()"
-                    class="flex-1 px-4 py-2.5 rounded-xl border border-blue-100 text-sm font-medium text-gray-600 hover:bg-sky-50 hover:border-sky-300 transition-all duration-200 cursor-pointer">
-                    ปิด
-                </button>
-                <button id="confirm-teachers-btn" onclick="confirmTeachers()"
-                    class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 text-white text-sm font-medium rounded-xl shadow-md shadow-sky-400/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
-                    disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                    ยืนยันและเพิ่มนักเรียน
-                </button>
-            </div>
-        </div>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -198,156 +178,254 @@
     <script src="../js.js"></script>
     <script>
         // ===== Init =====
-        window.addEventListener('load', () => {
-            AOS.init({ once: true, easing: 'ease-out-cubic', duration: 500 });
-        });
-
+        window.addEventListener('load', () => { AOS.init({ once: true, easing: 'ease-out-cubic', duration: 500 }); });
         const token = localStorage.getItem('token');
         if (!token) window.location.replace('/index.html');
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             if (payload.role_id !== 3) window.location.replace('/index.html');
         } catch { window.location.replace('/index.html'); }
-
-        fetch('sidebar.html').then(r => r.text()).then(h => {
-            document.getElementById('sidebar-container').innerHTML = h;
-        });
+        fetch('sidebar.html').then(r => r.text()).then(h => { document.getElementById('sidebar-container').innerHTML = h; });
         loadNav('เพิ่มผู้รับผิดชอบ');
 
-        // ===== State =====
+        // ===== Global State =====
+        let draftActivities = [];
         let selectedActivity = null;
         let teacherList = [];
+        let allTeachers = [];      
+        let filteredTeachers = []; 
+        let dropdownHighlight = -1;
 
-        // ===== Load Activities =====
-        async function loadActivities() {
+        // ===== 1. Load Data on Startup =====
+        async function loadInitialData() {
             try {
-                const res = await fetch('http://localhost:3000/select/activity_draft', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                console.log(data);
-                
-                document.querySelectorAll('.skeleton-card').forEach(el => el.remove());
+                // Fetch Draft Activities
+                const actRes = await fetch('http://localhost:3000/select/activity_draft', { headers: { 'Authorization': `Bearer ${token}` } });
+                const actData = await actRes.json();
+                draftActivities = Array.isArray(actData) ? actData : [];
+                populateActivitySelect();
 
-                if (!Array.isArray(data) || data.length === 0) {
-                    const es = document.getElementById('empty-state');
-                    es.classList.remove('hidden');
-                    es.classList.add('flex');
-                    return;
-                }
-
-                const container = document.getElementById('activity-list');
-                container.innerHTML = '';
-
-                data.forEach((act, i) => {
-                    const startDate = act.start_time
-                        ? new Date(act.start_time).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
-                        : '—';
-                    const endDate = act.end_time
-                        ? new Date(act.end_time).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
-                        : '—';
-                    const safeTitle = (act.activity_name || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-
-                    const card = document.createElement('div');
-                    card.className = 'bg-white/70 backdrop-blur-xl rounded-2xl border border-blue-50 shadow-sm hover:shadow-md hover:border-sky-200 transition-all duration-300';
-                    card.setAttribute('data-aos', 'fade-up');
-                    card.setAttribute('data-aos-duration', '450');
-                    card.setAttribute('data-aos-delay', String(i * 70));
-
-                    const posterHtml = act.activity_image
-                        ? `<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border border-blue-50"><img src="http://localhost:3000/uploads/person/${act.activity_image}" alt="poster" class="w-full h-full object-cover"></div>`
-                        : `<div class="w-16 h-16 rounded-xl bg-sky-50 flex-shrink-0 border border-blue-100 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-sky-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" /></svg></div>`;
-
-                    card.innerHTML = `
-                        <div class="p-5">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="flex-1 min-w-0">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-200 mb-1">รอดำเนินการ</span>
-                                    <h3 class="text-base font-bold text-gray-800 truncate">${act.activity_name || '—'}</h3>
-                                    <p class="text-xs text-gray-400 mt-1 line-clamp-2">${act.activity_detail || 'ไม่มีรายละเอียด'}</p>
-                                    <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" /></svg>
-                                        ${startDate} – ${endDate}
-                                    </p>
-                                </div>
-                                ${posterHtml}
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-blue-50 flex items-center justify-between">
-                                <div id="teacher-count-${act.activity_id}" class="text-xs text-gray-400 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>
-                                    <span>กำลังโหลด...</span>
-                                </div>
-                                <button onclick="openModal(${act.activity_id}, '${safeTitle}')"
-                                    class="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-sky-400 to-blue-500 text-white text-xs font-medium rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                    เพิ่มผู้รับผิดชอบ
-                                </button>
-                            </div>
-                        </div>`;
-
-                    container.appendChild(card);
-                    loadTeacherCount(act.activity_id);
-                });
-
-                AOS.refresh();
-
+                // Fetch All Teachers
+                const teachRes = await fetch('http://localhost:3000/select/teachers', { headers: { 'Authorization': `Bearer ${token}` } });
+                allTeachers = await teachRes.json();
             } catch (err) {
-                console.error(err);
-                document.querySelectorAll('.skeleton-card').forEach(el => el.remove());
-                document.getElementById('activity-list').innerHTML = `<div class="text-center py-16 text-gray-300 text-sm">ไม่สามารถโหลดข้อมูลได้</div>`;
+                console.error("Initiation error", err);
+                Swal.fire({ icon: 'error', title: 'โหลดข้อมูลล้มเหลว', text: 'ไม่สามารถโหลดข้อมูลตั้งต้นได้' });
             }
         }
 
-        async function loadTeacherCount(activityId) {
-            try {
-                const res = await fetch(`http://localhost:3000/activity/${activityId}/teachers`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                const count = Array.isArray(data) ? data.length : 0;
-                const el = document.getElementById(`teacher-count-${activityId}`);
-                if (el) el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg><span>ผู้รับผิดชอบ ${count} คน</span>`;
-            } catch {
-                const el = document.getElementById(`teacher-count-${activityId}`);
-                if (el) el.querySelector('span').textContent = 'ผู้รับผิดชอบ — คน';
+        function populateActivitySelect() {
+            const select = document.getElementById('activity-select');
+            if (draftActivities.length === 0) {
+                select.innerHTML = '<option value="">-- ไม่มีกิจกรรมรอดำเนินการ --</option>';
+                select.disabled = true;
+                return;
             }
+            select.innerHTML = '<option value="">-- กรุณาเลือกกิจกรรม --</option>';
+            draftActivities.forEach(act => {
+                const opt = document.createElement('option');
+                opt.value = act.activity_id;
+                opt.textContent = act.activity_name;
+                select.appendChild(opt);
+            });
+            select.disabled = false;
         }
 
-        // ===== Modal =====
-        function openModal(activityId, activityName) {
-            selectedActivity = { activity_id: activityId, activity_name: activityName };
+        // ===== 2. Handle Activity Selection =====
+        async function onActivitySelected() {
+            const select = document.getElementById('activity-select');
+            const editSection = document.getElementById('edit-section');
+            const actId = parseInt(select.value, 10);
+
+            if (!actId) {
+                editSection.classList.add('hidden');
+                selectedActivity = null;
+                return;
+            }
+
+            selectedActivity = draftActivities.find(a => a.activity_id === actId);
+            if (!selectedActivity) return;
+
+            // Fill display info
+            const startDate = selectedActivity.start_time ? new Date(selectedActivity.start_time).toLocaleString('th-TH') : '—';
+            const endDate = selectedActivity.end_time ? new Date(selectedActivity.end_time).toLocaleString('th-TH') : '—';
+            
+            document.getElementById('act-title').textContent = selectedActivity.activity_name || '-';
+            document.getElementById('act-detail').textContent = selectedActivity.activity_detail || 'ไม่มีรายละเอียด';
+            document.getElementById('act-start').textContent = `เริ่ม: ${startDate} น.`;
+            document.getElementById('act-end').textContent = `สิ้นสุด: ${endDate} น.`;
+
+            const posterContainer = document.getElementById('act-poster-container');
+            if (selectedActivity.activity_image) {
+                const imgUrl = `http://localhost:3000/src/uploads/activity/${selectedActivity.activity_image}`;
+                posterContainer.innerHTML = `
+                    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                        <img src="${imgUrl}" alt="blur-bg" class="w-full h-full object-cover blur-3xl opacity-50 scale-125 transform transition-transform duration-1000">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-black/20"></div>
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center p-6">
+                        <img src="${imgUrl}" alt="poster" class="max-w-full max-h-full object-contain rounded-xl shadow-2xl ring-1 ring-white/20 hover:scale-[1.02] transition-transform duration-500 ease-out cursor-pointer">
+                    </div>
+                `;
+                posterContainer.classList.remove('hidden');
+                posterContainer.className = "relative w-full h-64 md:h-80 bg-slate-900 flex-shrink-0 border-b border-gray-800";
+            } else {
+                posterContainer.classList.add('hidden'); // hide container completely if no image to save space
+            }
+
+            // Load existing teachers
+            editSection.classList.remove('hidden');
             teacherList = [];
-            document.getElementById('modal-activity-name').textContent = activityName;
-            document.getElementById('teacher-id-input').value = '';
-            document.getElementById('teacher-input-error').classList.add('hidden');
             renderTeacherList();
-            const modal = document.getElementById('teacher-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => document.getElementById('teacher-id-input').focus(), 100);
+            
+            try {
+                const res = await fetch(`http://localhost:3000/select/activity/${actId}/teachers`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.ok) {
+                    const existing = await res.json();
+                    teacherList = existing.map(t => ({
+                        teacher_id: t.teacher_id,
+                        display_name: `${t.user_prefix || ''} ${t.first_name} ${t.last_name}`.trim(),
+                        user_code: t.user_code || `ID:${t.teacher_id}`
+                    }));
+                    renderTeacherList();
+                }
+            } catch (err) { }
         }
 
-        function closeModal() {
-            document.getElementById('teacher-modal').classList.add('hidden');
-            document.getElementById('teacher-modal').classList.remove('flex');
-            selectedActivity = null;
-            teacherList = [];
+        // ===== 3. Searchable Dropdown Logic =====
+        function openTeacherDropdown() {
+            renderDropdownItems(document.getElementById('teacher-search-input').value.trim());
+            document.getElementById('teacher-dropdown-menu').classList.add('open');
         }
 
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+        function closeTeacherDropdown() {
+            document.getElementById('teacher-dropdown-menu').classList.remove('open');
+            dropdownHighlight = -1;
+        }
 
-        // ===== Render Teacher Chips =====
+        document.addEventListener('click', (e) => {
+            const wrap = document.getElementById('teacher-dropdown-wrap');
+            if (wrap && !wrap.contains(e.target)) closeTeacherDropdown();
+        });
+
+        function onTeacherSearch() {
+            const q = document.getElementById('teacher-search-input').value.trim();
+            document.getElementById('teacher-search-clear').classList.toggle('hidden', q === '');
+            renderDropdownItems(q);
+            document.getElementById('teacher-dropdown-menu').classList.add('open');
+            dropdownHighlight = -1;
+        }
+
+        function clearTeacherSearch() {
+            document.getElementById('teacher-search-input').value = '';
+            document.getElementById('teacher-search-clear').classList.add('hidden');
+            renderDropdownItems('');
+            document.getElementById('teacher-search-input').focus();
+        }
+
+        function renderDropdownItems(query) {
+            const menu = document.getElementById('teacher-dropdown-menu');
+            if (allTeachers.length === 0) {
+                menu.innerHTML = '<div class="teacher-dropdown-loading">กำลังโหลดรายชื่อครู...</div>';
+                return;
+            }
+
+            const q = query.toLowerCase();
+            filteredTeachers = allTeachers.filter(t => {
+                const fullName = `${t.user_prefix || ''} ${t.first_name} ${t.last_name}`.toLowerCase();
+                const code = (t.user_code || '').toLowerCase();
+                return fullName.includes(q) || code.includes(q);
+            });
+
+            if (filteredTeachers.length === 0) {
+                menu.innerHTML = '<div class="teacher-dropdown-empty">ไม่พบรายชื่อครู</div>';
+                return;
+            }
+
+            menu.innerHTML = filteredTeachers.map((t, i) => {
+                const initials = (t.first_name?.[0] || '?').toUpperCase();
+                const displayName = `${t.user_prefix || ''} ${t.first_name} ${t.last_name}`.trim();
+                const code = t.user_code || `ID:${t.user_id}`;
+                return `
+                    <div class="teacher-dropdown-item" data-idx="${i}" onclick="selectTeacherFromDropdown(${i})">
+                        <div class="t-avatar">${initials}</div>
+                        <div>
+                            <div class="t-name">${displayName}</div>
+                            <div class="t-code">${code}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function highlightDropdownItem(idx) {
+            const items = document.querySelectorAll('#teacher-dropdown-menu .teacher-dropdown-item');
+            items.forEach(el => el.classList.remove('active'));
+            if (idx >= 0 && idx < items.length) {
+                items[idx].classList.add('active');
+                items[idx].scrollIntoView({ block: 'nearest' });
+            }
+        }
+
+        function onTeacherSearchKey(e) {
+            const menu = document.getElementById('teacher-dropdown-menu');
+            const isOpen = menu.classList.contains('open');
+            const items = filteredTeachers.length;
+
+            if (e.key === 'ArrowDown') {
+                if (!isOpen) openTeacherDropdown();
+                dropdownHighlight = Math.min(dropdownHighlight + 1, items - 1);
+                highlightDropdownItem(dropdownHighlight);
+                e.preventDefault();
+            } else if (e.key === 'ArrowUp') {
+                dropdownHighlight = Math.max(dropdownHighlight - 1, 0);
+                highlightDropdownItem(dropdownHighlight);
+                e.preventDefault();
+            } else if (e.key === 'Enter') {
+                if (isOpen && dropdownHighlight >= 0) {
+                    selectTeacherFromDropdown(dropdownHighlight);
+                    e.preventDefault();
+                }
+            } else if (e.key === 'Escape') {
+                closeTeacherDropdown();
+            }
+        }
+
+        function selectTeacherFromDropdown(idx) {
+            const t = filteredTeachers[idx];
+            if (!t) return;
+
+            const errEl = document.getElementById('teacher-input-error');
+            if (teacherList.find(x => x.teacher_id === t.user_id)) {
+                errEl.textContent = 'ครูท่านนี้ถูกเพิ่มแล้ว';
+                errEl.classList.remove('hidden');
+                closeTeacherDropdown();
+                return;
+            }
+
+            errEl.classList.add('hidden');
+            const displayName = `${t.user_prefix || ''} ${t.first_name} ${t.last_name}`.trim();
+            teacherList.push({
+                teacher_id: t.user_id,
+                display_name: displayName,
+                user_code: t.user_code || `ID:${t.user_id}`
+            });
+
+            // Clear search input
+            clearTeacherSearch();
+            renderTeacherList();
+        }
+
+        // ===== 4. Manage Teacher List Chips =====
         function renderTeacherList() {
             const container = document.getElementById('teacher-list');
             const emptyMsg = document.getElementById('teacher-empty-msg');
-            const btn = document.getElementById('confirm-teachers-btn');
+            const counter = document.getElementById('teacher-count-badge');
+            
+            counter.textContent = `${teacherList.length} คน`;
 
             if (teacherList.length === 0) {
                 container.innerHTML = '';
-                container.appendChild(emptyMsg);
                 emptyMsg.classList.remove('hidden');
-                btn.disabled = true;
                 return;
             }
 
@@ -357,46 +435,20 @@
             teacherList.forEach((t, idx) => {
                 const chip = document.createElement('div');
                 chip.className = 'flex items-center justify-between px-3 py-2 bg-sky-50 border border-sky-100 rounded-xl group hover:border-sky-300 transition-all duration-200';
+                const initials = (t.display_name?.[0] || '?').toUpperCase();
                 chip.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-700">${t.teacher_id}</p>
-                            <p class="text-[10px] text-gray-400">รหัสผู้สอน</p>
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">${initials}</div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-gray-700 truncate">${t.display_name}</p>
+                            <p class="text-[10px] text-gray-400">${t.user_code}</p>
                         </div>
                     </div>
-                    <button onclick="removeTeacher(${idx})" class="w-6 h-6 rounded-lg text-transparent group-hover:text-red-400 hover:!text-red-600 hover:bg-red-50 flex items-center justify-center transition-all duration-200 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <button onclick="removeTeacher(${idx})" class="w-6 h-6 rounded-lg text-red-300 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-all duration-200 cursor-pointer flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>`;
                 container.appendChild(chip);
             });
-
-            btn.disabled = false;
-        }
-
-        function addTeacher() {
-            const input = document.getElementById('teacher-id-input');
-            const errEl = document.getElementById('teacher-input-error');
-            const val = input.value.trim();
-
-            if (!val) {
-                errEl.textContent = 'กรุณากรอกรหัสผู้สอน';
-                errEl.classList.remove('hidden');
-                input.focus();
-                return;
-            }
-            if (teacherList.find(t => t.teacher_id === val)) {
-                errEl.textContent = 'รหัสนี้ถูกเพิ่มแล้ว';
-                errEl.classList.remove('hidden');
-                return;
-            }
-            errEl.classList.add('hidden');
-            teacherList.push({ teacher_id: val });
-            input.value = '';
-            renderTeacherList();
-            input.focus();
         }
 
         function removeTeacher(idx) {
@@ -404,46 +456,61 @@
             renderTeacherList();
         }
 
-        async function confirmTeachers() {
-            if (!selectedActivity || teacherList.length === 0) return;
+        // ===== 5. Save and Confirm =====
+        async function saveActivity() {
+            if (!selectedActivity) return;
+            if (teacherList.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'ยังไม่พร้อมบันทึก', text: 'กรุณาเพิ่มผู้รับผิดชอบอย่างน้อย 1 ท่าน', confirmButtonColor: '#38bdf8' });
+                return;
+            }
 
-            const btn = document.getElementById('confirm-teachers-btn');
+            const confirmed = await Swal.fire({
+                title: 'ยืนยันการบันทึก?',
+                html: 'กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนบันทึก    ',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'แน่ใจ, บันทึกเลย',
+                cancelButtonText: 'ยกเลิก'
+            });
+
+            if (!confirmed.isConfirmed) return;
+
+            const btn = document.getElementById('btn-save');
             btn.disabled = true;
             btn.innerHTML = `<svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> กำลังบันทึก...`;
 
             try {
-                const promises = teacherList.map(t =>
-                    fetch('http://localhost:3000/add/activity_draft', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ activity_id: selectedActivity.activity_id, teacher_id: t.teacher_id })
-                    })
-                );
-                const results = await Promise.all(promises);
-                const failed = results.filter(r => !r.ok);
+                const res = await fetch(`http://localhost:3000/confirm/activity_draft/${selectedActivity.activity_id}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ teacher_ids: teacherList.map(t => t.teacher_id) })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'บันทึกไม่สำเร็จ');
 
-                if (failed.length > 0) throw new Error(`บันทึกไม่สำเร็จ ${failed.length} รายการ`);
-
-                closeModal();
                 await Swal.fire({
                     icon: 'success',
                     title: 'บันทึกสำเร็จ!',
-                    html: `เพิ่มผู้รับผิดชอบ <strong>${teacherList.length} คน</strong> เรียบร้อยแล้ว`,
+                    html: `กำหนดผู้รับผิดชอบ <strong>${teacherList.length} คน</strong>`,
                     confirmButtonColor: '#2563eb',
                     confirmButtonText: 'ตกลง'
                 });
-                loadActivities();
+
+                // Reload page to reset state and update drafts
+                window.location.reload();
 
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: '#2563eb' });
                 btn.disabled = false;
-                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> ยืนยันและเพิ่มนักเรียน`;
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> บันทึกและยืนยันกิจกรรม`;
             }
         }
 
-        loadActivities();
+        // Boot
+        loadInitialData();
     </script>
-
 </body>
-
 </html>

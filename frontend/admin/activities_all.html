@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลกิจกรรมทั้งหมด | ผู้ดูแลระบบ</title>
+
+    <link rel="stylesheet" href="../style/output.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/font.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&family=Prompt:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body class="anuphan-login dashboard bg-slate-50">
+
+    <!-- Decorative Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/30 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/25 rounded-full blur-3xl animate-pulse [animation-delay:2s]"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl animate-pulse [animation-delay:4s]"></div>
+    </div>
+
+    <div class="relative z-10 flex min-h-screen">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden" onclick="closeSidebar()"></div>
+        <aside id="sidebar-container"></aside>
+
+        <main class="flex-1 flex flex-col min-h-screen w-full">
+            <header id="nav-container"></header>
+
+            <div class="flex-1 p-4 md:p-6 w-full mx-auto max-w-7xl">
+
+                <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm text-gray-400 mb-6" data-aos="fade-down" data-aos-duration="500">
+                    <a href="index.html" class="hover:text-blue-500 transition-colors duration-200">แดชบอร์ด</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    <span class="text-gray-600 font-medium">ภาพรวมกิจกรรม</span>
+                </div>
+
+                <!-- Page Header & Filter -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8" data-aos="fade-up" data-aos-duration="500">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-400/30 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" /></svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl md:text-2xl font-bold text-gray-800">ข้อมูลกิจกรรมทั้งหมด</h1>
+                            <p class="text-xs md:text-sm text-gray-500">ตรวจสอบสถานะและรายละเอียดกิจกรรมทั้งหมดในระบบ</p>
+                        </div>
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div class="flex flex-wrap items-center gap-2 bg-white/60 p-2 rounded-xl border border-blue-100 shadow-sm w-full md:w-auto md:shrink-0 justify-center md:justify-start">
+                        <button onclick="setFilter('all')" class="filter-btn active px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap grow md:grow-0 text-center" data-status="all">ทั้งหมด</button>
+                        <button onclick="setFilter('draft')" class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-gray-500 hover:bg-gray-100 grow md:grow-0 text-center" data-status="draft">ฉบับร่าง</button>
+                        <button onclick="setFilter('closed')" class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-gray-500 hover:bg-gray-100 grow md:grow-0 text-center" data-status="closed">รอเปิด</button>
+                        <button onclick="setFilter('open')" class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-gray-500 hover:bg-gray-100 grow md:grow-0 text-center" data-status="open">กำลังเปิด</button>
+                        <button onclick="setFilter('finished')" class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-gray-500 hover:bg-gray-100 grow md:grow-0 text-center" data-status="finished">เสร็จสิ้น</button>
+                        <button onclick="setFilter('cancelled')" class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-gray-500 hover:bg-gray-100 grow md:grow-0 text-center" data-status="cancelled">ยกเลิก</button>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div id="activity-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" data-aos="fade-up" data-aos-delay="100">
+                    <!-- Cards injected here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-24 text-center">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" /></svg>
+                    </div>
+                    <p class="text-gray-500 font-medium">ไม่พบกิจกรรมที่ตรงกับสถานะนี้</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .filter-btn.active { background-color: white; color: #3b82f6; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="../js.js"></script>
+    <script>
+        window.addEventListener('load', () => { AOS.init({ once: true, duration: 500 }); });
+        
+        const token = localStorage.getItem('token');
+        if (!token) window.location.replace('/index.html');
+        fetch('sidebar.html').then(r => r.text()).then(h => { document.getElementById('sidebar-container').innerHTML = h; });
+        loadNav('ภาพรวมกิจกรรม');
+
+        let allActivities = [];
+        let currentFilter = 'all';
+
+        async function fetchAllActivities() {
+            try {
+                const res = await fetch('http://localhost:3000/select/activity_all', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                allActivities = Array.isArray(data) ? data : [];
+                renderGrid();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').querySelector('p').textContent = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+            }
+        }
+
+        function setFilter(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.status === status) {
+                    btn.classList.add('active', 'text-blue-500');
+                    btn.classList.remove('text-gray-500', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('active', 'text-blue-500');
+                    btn.classList.add('text-gray-500', 'hover:bg-gray-100');
+                }
+            });
+            renderGrid();
+        }
+
+        function getStatusInfo(status) {
+            switch(status) {
+                case 'draft': return { t: 'ฉบับร่าง', c: 'bg-gray-100 text-gray-600 border-gray-200' };
+                case 'closed': return { t: 'รอเปิด', c: 'bg-orange-100 text-orange-600 border-orange-200' };
+                case 'open': return { t: 'เปิดใช้งาน', c: 'bg-emerald-100 text-emerald-600 border-emerald-200' };
+                case 'finished': return { t: 'เสร็จสิ้น', c: 'bg-blue-100 text-blue-600 border-blue-200' };
+                case 'cancelled': return { t: 'ยกเลิก', c: 'bg-red-100 text-red-600 border-red-200' };
+                default: return { t: status, c: 'bg-gray-100 text-gray-600' };
+            }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('activity-grid');
+            const empty = document.getElementById('empty-state');
+            grid.innerHTML = '';
+
+            const filtered = currentFilter === 'all' ? allActivities : allActivities.filter(a => a.activity_status === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            empty.classList.add('hidden');
+            empty.classList.remove('flex');
+
+            filtered.forEach((act, idx) => {
+                const sInfo = getStatusInfo(act.activity_status);
+                let imgHtml = '';
+                
+                if(act.activity_image) {
+                    imgHtml = `<img src="http://localhost:3000/src/uploads/activity/${act.activity_image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="poster">`;
+                } else {
+                    imgHtml = `<div class="w-full h-full bg-slate-100 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" /></svg></div>`;
+                }
+
+                const startDate = act.start_time ? new Date(act.start_time).toLocaleString('th-TH', {dateStyle: 'medium', timeStyle: 'short'}) : 'ไม่มีข้อมูลเวลา';
+
+                const card = document.createElement('div');
+                card.className = "group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col";
+                card.innerHTML = `
+                    <div class="relative w-full h-48 overflow-hidden bg-gray-50 flex-shrink-0">
+                        ${imgHtml}
+                        <div class="absolute top-3 right-3 px-3 py-1 text-[11px] font-bold rounded-full border shadow-sm backdrop-blur-md ${sInfo.c}">${sInfo.t}</div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="text-[15px] font-bold text-gray-800 line-clamp-2 leading-snug mb-2 group-hover:text-blue-500 transition-colors">${act.activity_name}</h3>
+                        <p class="text-xs text-gray-500 mt-auto flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            เริ่ม: ${startDate} น.
+                        </p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        fetchAllActivities();
+    </script>
+</body>
+</html>
